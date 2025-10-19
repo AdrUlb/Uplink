@@ -11,16 +11,29 @@ template<typename T> class BTree
 	T data_;
 	char* label_;
 
-	static void RecursiveConvertToDArray(DArray<T> darray, BTree& tree)
+	static void RecursiveConvertToDArray(DArray<T>* const darray, const BTree& tree)
 	{
 		assert(darray);
 
 		for (auto* current = &tree; current; current = current->Right())
 		{
 			if (current->label_)
-				darray->PutData(current->Right());
+				darray->PutData(current->data_);
 
-			RecursiveConvertToDArray(darray, current->Left());
+			RecursiveConvertToDArray(darray, *current->Left());
+		}
+	}
+
+	static void RecursiveConvertIndexToDArray(DArray<const char*>* const darray, const BTree& tree)
+	{
+		assert(darray);
+
+		for (auto* current = &tree; current; current = current->Right())
+		{
+			if (current->label_)
+				darray->PutData(current->label_);
+
+			RecursiveConvertIndexToDArray(darray, *current->Left());
 		}
 	}
 
@@ -85,7 +98,7 @@ public:
 		current->data_ = data;
 	}
 
-	BTree* LookupTree(const char* label)
+	const BTree* LookupTree(const char* label) const
 	{
 		auto* current = this;
 
@@ -114,7 +127,22 @@ public:
 		return nullptr;
 	}
 
-	T GetData(const char* label)
+	BTree* LookupTree(const char* label)
+	{
+		return const_cast<BTree*>(static_cast<const BTree*>(this)->LookupTree(label));
+	}
+
+	const T& GetData() const
+	{
+		return data_;
+	}
+
+	void SetData(const T& data)
+	{
+		data_ = data;
+	}
+
+	T LookupData(const char* label) const
 	{
 		const auto node = LookupTree(label);
 		if (!node)
@@ -134,10 +162,17 @@ public:
 		label_ = nullptr;
 	}
 
-	DArray<T>* ConvertToDArray()
+	DArray<T>* ConvertToDArray() const
 	{
 		auto* const darray = new DArray<T>();
-		RecursiveConvertToDArray(darray, this);
+		RecursiveConvertToDArray(darray, *this);
+		return darray;
+	}
+
+	DArray<const char*>* ConvertIndexToDArray()
+	{
+		auto* const darray = new DArray<const char*>();
+		RecursiveConvertIndexToDArray(darray, *this);
 		return darray;
 	}
 };

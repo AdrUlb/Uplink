@@ -68,6 +68,31 @@ UplinkObjectID Option::GetOBJECTID()
 	return UplinkObjectID::Option;
 }
 
+const char* Option::GetName() const
+{
+	return name_;
+}
+
+const char* Option::GetTooltip() const
+{
+	return tooltip_;
+}
+
+bool Option::GetYesOrNo() const
+{
+	return yesOrNo_;
+}
+
+bool Option::GetVisible() const
+{
+	return visible_;
+}
+
+int Option::GetValue() const
+{
+	return value_;
+}
+
 void Option::SetName(const char* name)
 {
 	UplinkAssert(strlen(name) < sizeof(name_));

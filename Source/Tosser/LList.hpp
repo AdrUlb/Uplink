@@ -153,7 +153,7 @@ public:
 		if (!current)
 		{
 			cachedIndex_ = CACHED_INDEX_INVALID;
-			return current;
+			return current->data;
 		}
 
 		cachedIndex_ = index;
@@ -177,7 +177,7 @@ public:
 		cachedIndex_ = CACHED_INDEX_INVALID;
 	}
 
-	T operator[](const size_t index)
+	T& operator[](const size_t index)
 	{
 		return GetData(index);
 	}

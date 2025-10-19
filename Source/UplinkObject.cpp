@@ -2,11 +2,6 @@
 #include "Util.hpp"
 #include "_.hpp"
 
-UplinkObject::~UplinkObject()
-{
-	TODO_ABORT;
-}
-
 bool UplinkObject::Load(FILE* file)
 {
 	return true;
@@ -25,7 +20,7 @@ const char* UplinkObject::GetID()
 
 UplinkObjectID UplinkObject::GetOBJECTID()
 {
-	return UplinkObjectID::UplinkObject;
+	return UplinkObjectID::None;
 }
 
 void UplinkObject::LoadID(FILE* file) {}

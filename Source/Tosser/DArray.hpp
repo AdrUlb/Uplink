@@ -27,7 +27,7 @@ public:
 		return size_;
 	}
 
-	[[nodiscard]] bool ValidIndex(size_t index) const
+	[[nodiscard]] bool ValidIndex(const size_t index) const
 	{
 		return index < size_ && valid_[index];
 	}
@@ -119,7 +119,7 @@ public:
 		valid_[index] = false;
 	}
 
-	T GetData(size_t index) const
+	T& GetData(size_t index) const
 	{
 		assert(index < size_);
 
@@ -139,7 +139,7 @@ public:
 		size_ = 0;
 	}
 
-	T operator[](const size_t index) const
+	T& operator[](const size_t index) const
 	{
 		assert(index < size_);
 

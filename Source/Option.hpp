@@ -18,6 +18,13 @@ public:
 	void Update() override;
 	const char* GetID() override;
 	UplinkObjectID GetOBJECTID() override;
+
+	[[nodiscard]] const char* GetName() const;
+	[[nodiscard]] const char* GetTooltip() const;
+	[[nodiscard]] bool GetYesOrNo() const;
+	[[nodiscard]] bool GetVisible() const;
+	[[nodiscard]] int GetValue() const;
+
 	void SetName(const char* name);
 	void SetTooltip(const char* tooltip);
 	void SetYesOrNo(bool yesOrNo);
