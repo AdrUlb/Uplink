@@ -1,6 +1,7 @@
 #include <csignal>
 #include "_.hpp"
-#include "Tosser/BTree.hpp"
+
+#include "Option.hpp"
 
 static FILE* file_stdout = nullptr;
 
@@ -27,7 +28,7 @@ DEFINE_SIGNAL_HANDLER(hSignalSIGPIPE, "write to pipe with no one reading (SIGPIP
 
 #undef DEFINE_SIGNAL_HANDLER
 
-static void RunUplink(int argc, char* argv[])
+static void RunUplink(const int argc, char* argv[])
 {
 	TODO_ABORT;
 }

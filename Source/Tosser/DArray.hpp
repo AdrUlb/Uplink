@@ -2,7 +2,7 @@
 
 #include <cassert>
 #include <cstddef>
-#include <iostream>
+#include <print>
 
 template<typename T> class DArray
 {
@@ -114,7 +114,7 @@ public:
 		assert(index < size_);
 
 		if (!valid_[index])
-			std::printf("Warning : DArray::RemoveData called, index not valid.  (Index = %zu)\n", index);
+			std::print("DArray::RemoveData called with invalid index {}.\n", index);
 
 		valid_[index] = false;
 	}
@@ -124,7 +124,7 @@ public:
 		assert(index < size_);
 
 		if (!valid_[index])
-			std::printf("DArray::GetData called, referenced unused data.  (Index = %zu)\n", index);
+			std::print("DArray::GetData called with invalid index {}.\n", index);
 
 		return data_[index];
 	}
@@ -144,7 +144,7 @@ public:
 		assert(index < size_);
 
 		if (!valid_[index])
-			std::printf("DArray error : DArray::[] called, referenced unused data.  (Index = %zu)\n", index);
+			std::print("DArray::[] called with invalid index {}.\n", index);
 
 		return GetData(index);
 	}

@@ -4,11 +4,13 @@
 
 enum class UplinkObjectID
 {
-	UplinkObject = 0
+	UplinkObject,
+	Option = 8
 };
 
 class UplinkObject
 {
+public:
 	virtual ~UplinkObject();
 	virtual bool Load(FILE* file);
 	virtual void Save(FILE* file);
