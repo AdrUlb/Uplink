@@ -15,7 +15,7 @@
                 " Location    : %s, line %d\n Buffer size : \n" \
                 " Format      : %s\n Buffer      : %s\n", \
                 __FILE__, __LINE__, max, format, buffer); \
-            *(char*)0 = 0; \
+            *(volatile char*)0 = 0; \
         } \
     } \
     while (false)

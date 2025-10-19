@@ -2,7 +2,4 @@
 
 #include "UplinkObject.hpp"
 
-class Options : public UplinkObject
-{
-
-};
+class Options : public UplinkObject {};
