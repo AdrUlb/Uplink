@@ -17,7 +17,7 @@ public:
 	void Print() override;
 	void Update() override;
 	const char* GetID() override;
-	UplinkObjectID GetOBJECTID() override;
+	UplinkObjectId GetOBJECTID() override;
 
 	[[nodiscard]] const char* GetName() const;
 	[[nodiscard]] const char* GetTooltip() const;

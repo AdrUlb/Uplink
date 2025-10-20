@@ -29,6 +29,7 @@ class App : public UplinkObject
 
 public:
 	[[nodiscard]] static DArray<char*>* ListExistingGames();
+	static void CoreDump();
 
 	[[nodiscard]] const char* GetPath() const { return path_; }
 	[[nodiscard]] const char* GetUsersDir() const { return usersDir_; }
@@ -53,12 +54,12 @@ public:
 	MainMenu& GetMainMenu();
 	Network& GetNetwork();
 	Options& GetOptions();
+	[[nodiscard]] Options* GetOptionsOrNull() const { return options_; }
 	void Initialise();
 	void Set(const char* path, const char* version, const char* type, const char* date, const char* title);
 	bool Closed();
 	void CloseGame();
 	void Close();
-	void CoreDump();
 
 	void LoadGame(const char* user);
 	void SetNextLoadGame(const char* user);

@@ -63,9 +63,9 @@ const char* Option::GetID()
 	return "OPTION";
 }
 
-UplinkObjectID Option::GetOBJECTID()
+UplinkObjectId Option::GetOBJECTID()
 {
-	return UplinkObjectID::Option;
+	return UplinkObjectId::Option;
 }
 
 const char* Option::GetName() const

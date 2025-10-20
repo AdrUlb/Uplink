@@ -1,6 +1,6 @@
-#include "Redshirt.hpp"
+#include "../Include/Redshirt/Redshirt.hpp"
 
-#include "../_.hpp"
+#include "../../_.hpp"
 
 bool RsFileEncryptedNoVerify(const char* path)
 {

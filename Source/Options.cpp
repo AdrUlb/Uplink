@@ -4,8 +4,7 @@
 #include <spanstream>
 #include "Uplink.hpp"
 #include "Util.hpp"
-#include "_.hpp"
-#include "Redshirt/Redshirt.hpp"
+#include "../Redshirt/Include/Redshirt/Redshirt.hpp"
 
 static constexpr auto SAVE_VERSION_MINIMUM = "SAV56";
 static constexpr auto SAVE_VERSION_LATEST = "SAV62";
@@ -118,8 +117,6 @@ void Options::Save(FILE* file)
 	fclose(file);
 
 	RsEncryptFile(filepath);
-
-	TODO_ABORT;
 }
 
 void Options::Print()
@@ -136,14 +133,14 @@ const char* Options::GetID()
 	return "OPTIONS";
 }
 
-Option* Options::GetOption(const char* name) const
+Option* Options::GetOptionOrNull(const char* name) const
 {
 	return options_.LookupData(name);
 }
 
 int Options::GetOptionValue(const char* name) const
 {
-	const auto* option = GetOption(name);
+	const auto* option = GetOptionOrNull(name);
 
 	if (!option)
 		UplinkAbort(std::format("Option {} not found", name));
@@ -202,7 +199,7 @@ const char* Options::GetThemeDescription() const
 
 bool Options::IsOptionEqualTo(const char* name, const int value) const
 {
-	const auto option = GetOption(name);
+	const auto option = GetOptionOrNull(name);
 
 	if (!option)
 		return false;
@@ -311,10 +308,10 @@ void Options::SetThemeName(const char* name)
 
 void Options::CreateDefaultOptions()
 {
-	if (!GetOption("game_debugstart"))
+	if (!GetOptionOrNull("game_debugstart"))
 		SetOptionValue("game_debugstart", 1, "z", true, false);
 
-	if (!GetOption("game_firsttime"))
+	if (!GetOptionOrNull("game_firsttime"))
 	{
 		const auto* const existingGames = App::ListExistingGames();
 
@@ -334,50 +331,50 @@ void Options::CreateDefaultOptions()
 	std::ispanstream(UPLINK_VERSION) >> version;
 	version *= 100.0f;
 
-	if (!GetOption("game_version"))
+	if (!GetOptionOrNull("game_version"))
 		SetOptionValue("game_version", static_cast<int>(version), "z", false, false);
 
-	if (!GetOption("graphics_screenwidth"))
+	if (!GetOptionOrNull("graphics_screenwidth"))
 		SetOptionValue("graphics_screenwidth", 1024, "Sets the width of the screen", false, false);
 
-	if (!GetOption("graphics_screenheight"))
+	if (!GetOptionOrNull("graphics_screenheight"))
 		SetOptionValue("graphics_screenheight", 768, "Sets the height of the screen", false, false);
 
-	if (!GetOption("graphics_screendepth"))
+	if (!GetOptionOrNull("graphics_screendepth"))
 		SetOptionValue("graphics_screendepth", -1, "Sets the colour depth. -1 Means use desktop colour depth.", false, false);
 
-	if (!GetOption("graphics_screenrefresh"))
+	if (!GetOptionOrNull("graphics_screenrefresh"))
 		SetOptionValue("graphics_screenrefresh", -1, "Sets the refresh rate. -1 Means use desktop refresh.", false, false);
 
-	if (!GetOption("graphics_fullscreen"))
+	if (!GetOptionOrNull("graphics_fullscreen"))
 		SetOptionValue("graphics_fullscreen", true, "Sets the game to run fullscreen or in a window", true, true);
 
-	if (!GetOption("graphics_buttonanimations"))
+	if (!GetOptionOrNull("graphics_buttonanimations"))
 		SetOptionValue("graphics_buttonanimations", true, "Enables or disables button animations", true, true);
 
-	if (!GetOption("graphics_safemode"))
+	if (!GetOptionOrNull("graphics_safemode"))
 		SetOptionValue("graphics_safemode", false, "Enables graphical safemode for troubleshooting", true, true);
 
-	if (!GetOption("graphics_softwaremouse"))
+	if (!GetOptionOrNull("graphics_softwaremouse"))
 		SetOptionValue("graphics_softwaremouse", false, "Render a software mouse.  Use to correct mouse problems.", true, true);
 
-	if (!GetOption("graphics_fasterbuttonanimations"))
+	if (!GetOptionOrNull("graphics_fasterbuttonanimations"))
 		SetOptionValue("graphics_fasterbuttonanimations", false, "Increase the speed of button animations.", true, true);
 
-	if (!GetOption("graphics_defaultworldmap"))
+	if (!GetOptionOrNull("graphics_defaultworldmap"))
 		SetOptionValue("graphics_defaultworldmap", false, "Create agents with the default world map.", true, true);
 
-	if (!GetOption("graphics_softwarerendering"))
+	if (!GetOptionOrNull("graphics_softwarerendering"))
 		SetOptionValue("graphics_softwarerendering", false, "Enable software rendering.", true, false);
 
-	if (!GetOption("sound_musicenabled"))
+	if (!GetOptionOrNull("sound_musicenabled"))
 		SetOptionValue("sound_musicenabled", true, "Enables or disables music", true, true);
 
-	GetOption("graphics_softwarerendering")->SetVisible(false);
-	GetOption("graphics_screenwidth")->SetVisible(false);
-	GetOption("graphics_screenheight")->SetVisible(false);
-	GetOption("graphics_screendepth")->SetVisible(false);
-	GetOption("graphics_screenrefresh")->SetVisible(false);
+	GetOptionOrNull("graphics_softwarerendering")->SetVisible(false);
+	GetOptionOrNull("graphics_screenwidth")->SetVisible(false);
+	GetOptionOrNull("graphics_screenheight")->SetVisible(false);
+	GetOptionOrNull("graphics_screendepth")->SetVisible(false);
+	GetOptionOrNull("graphics_screenrefresh")->SetVisible(false);
 }
 
 void Options::RequestShutdownChange(const char* name, const int value)
@@ -386,7 +383,6 @@ void Options::RequestShutdownChange(const char* name, const int value)
 	UplinkStrncpy(optionChange->name, name, sizeof(optionChange->name));
 	optionChange->value = value;
 	shutdownChanges_.PutData(optionChange);
-	TODO_ABORT;
 }
 
 void Options::ApplyShutdownChanges()
@@ -400,7 +396,6 @@ void Options::ApplyShutdownChanges()
 		shutdownChanges_.RemoveData(0);
 		SetOptionValue(data->name, data->value);
 		delete data;
-		TODO_ABORT;
 	}
 }
 

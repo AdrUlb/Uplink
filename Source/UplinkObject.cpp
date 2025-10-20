@@ -18,9 +18,9 @@ const char* UplinkObject::GetID()
 	return "UOBJ";
 }
 
-UplinkObjectID UplinkObject::GetOBJECTID()
+UplinkObjectId UplinkObject::GetOBJECTID()
 {
-	return UplinkObjectID::None;
+	return UplinkObjectId::None;
 }
 
 void UplinkObject::LoadID(FILE* file) {}
@@ -37,4 +37,9 @@ char* UplinkObject::GetID_END()
 	auto* const str = new char[length];
 	UplinkSnprintf(str, length, "%s_END", GetID());
 	return str;
+}
+
+UplinkObject* CreateUplinkObject(UplinkObjectId objectId)
+{
+	TODO_ABORT;
 }

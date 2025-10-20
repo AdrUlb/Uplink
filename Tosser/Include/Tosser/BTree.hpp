@@ -11,29 +11,29 @@ template<typename T> class BTree
 	T data_;
 	char* label_;
 
-	static void RecursiveConvertToDArray(DArray<T>* const darray, const BTree& tree)
+	static void RecursiveConvertToDArray(DArray<T>* const darray, const BTree* tree)
 	{
 		assert(darray);
 
-		for (auto* current = &tree; current; current = current->Right())
+		for (auto* current = tree; current; current = current->Right())
 		{
 			if (current->label_)
 				darray->PutData(current->data_);
 
-			RecursiveConvertToDArray(darray, *current->Left());
+			RecursiveConvertToDArray(darray, current->Left());
 		}
 	}
 
-	static void RecursiveConvertIndexToDArray(DArray<const char*>* const darray, const BTree& tree)
+	static void RecursiveConvertIndexToDArray(DArray<const char*>* const darray, const BTree* tree)
 	{
 		assert(darray);
 
-		for (auto* current = &tree; current; current = current->Right())
+		for (auto* current = tree; current; current = current->Right())
 		{
 			if (current->label_)
 				darray->PutData(current->label_);
 
-			RecursiveConvertIndexToDArray(darray, *current->Left());
+			RecursiveConvertIndexToDArray(darray, current->Left());
 		}
 	}
 
@@ -46,11 +46,12 @@ public:
 		strcpy(label_, label);
 	}
 
+	BTree(const BTree&) = delete;
+	BTree& operator=(const BTree&) = delete;
+
 	~BTree()
 	{
 		Empty();
-		delete[] label_;
-		label_ = nullptr;
 	}
 
 	BTree* Left() const
@@ -146,7 +147,7 @@ public:
 	{
 		const auto node = LookupTree(label);
 		if (!node)
-			return 0;
+			return { };
 
 		return node->data_;
 	}
@@ -162,17 +163,17 @@ public:
 		label_ = nullptr;
 	}
 
-	DArray<T>* ConvertToDArray() const
+	[[nodiscard]] DArray<T>* ConvertToDArray() const
 	{
 		auto* const darray = new DArray<T>();
-		RecursiveConvertToDArray(darray, *this);
+		RecursiveConvertToDArray(darray, this);
 		return darray;
 	}
 
-	DArray<const char*>* ConvertIndexToDArray()
+	[[nodiscard]] DArray<const char*>* ConvertIndexToDArray() const
 	{
 		auto* const darray = new DArray<const char*>();
-		RecursiveConvertIndexToDArray(darray, *this);
+		RecursiveConvertIndexToDArray(darray, this);
 		return darray;
 	}
 };

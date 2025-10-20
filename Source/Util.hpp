@@ -5,18 +5,56 @@
 #include <source_location>
 #include <unistd.h>
 #include <sys/stat.h>
-
-#include "UplinkObject.hpp"
-#include "_.hpp"
 #include "Tosser/BTree.hpp"
 
+#include "UplinkObject.hpp"
+
 bool FileReadDataInt(std::source_location loc, void* ptr, size_t size, size_t count, FILE* file);
-void DeleteBTreeData(BTree<char*>& btree);
-bool LoadBTree(BTree<char*>& btree, FILE* file);
-void SaveBTree(BTree<char*>& btree, FILE* file);
-void PrintBTree(BTree<char*>& btree);
+bool LoadDynamicStringInt(std::source_location loc, char*& ptr, FILE* file);
+bool LoadDynamicStringInt(std::source_location loc, char* buffer, size_t max, FILE* file);
+void SaveDynamicString(const char* str, FILE* file);
+void SaveDynamicString(const char* str, size_t max, FILE* file);
+
+bool LoadBTree(BTree<UplinkObject*> & btree, FILE * file);
+void SaveBTree(const BTree<UplinkObject*>& btree, FILE* file);
+void PrintBTree(const BTree<UplinkObject*>& btree);
+void DeleteBTreeData(const BTree<UplinkObject*>& btree);
+
+bool LoadBTree(BTree<char*> & btree, FILE * file);
+void SaveBTree(const BTree<char*>& btree, FILE* file);
+void PrintBTree(const BTree<char*>& btree);
+void DeleteBTreeData(const BTree<char*>& btree);
+
+// ReSharper disable CppRedundantInlineSpecifier
+template<typename T> requires (std::is_base_of_v<UplinkObject, T> && !std::is_same_v<UplinkObject, T>)
+__attribute__((always_inline)) inline bool LoadBTree(BTree<T*>& btree, FILE* file)
+{
+	return LoadBTree(*reinterpret_cast<BTree<UplinkObject*>*>(&btree), file);
+}
+
+template<typename T> requires (std::is_base_of_v<UplinkObject, T> && !std::is_same_v<UplinkObject, T>)
+__attribute__((always_inline)) inline void SaveBTree(BTree<T*>& btree, FILE* file)
+{
+	SaveBTree(*reinterpret_cast<BTree<UplinkObject*>*>(&btree), file);
+}
+
+template<typename T> requires (std::is_base_of_v<UplinkObject, T> && !std::is_same_v<UplinkObject, T>)
+__attribute__((always_inline)) inline void PrintBTree(BTree<T*>& btree)
+{
+	PrintBTree(*reinterpret_cast<BTree<UplinkObject*>*>(&btree));
+}
+
+template<typename T> requires (std::is_base_of_v<UplinkObject, T> && !std::is_same_v<UplinkObject, T>)
+__attribute__((always_inline)) inline void DeleteBTreeData(BTree<T*>& btree)
+{
+	DeleteBTreeData(*reinterpret_cast<BTree<UplinkObject*>*>(&btree));
+}
+
+// ReSharper restore CppRedundantInlineSpecifier
 
 #define FileReadData(ptr, size, count, file) FileReadDataInt(std::source_location::current(), ptr, size, count, file)
+#define LoadDynamicString(ptr, file) LoadDynamicStringInt(std::source_location::current(), ptr, file)
+#define LoadDynamicStringBuffer(buffer, max, file) LoadDynamicStringInt(std::source_location::current(), buffer, max, file)
 
 #define UplinkAbort(message) \
 	do \
@@ -100,61 +138,4 @@ inline bool DoesFileExist(const char* path)
 inline void MakeDirectory(const char* path)
 {
 	mkdir(path, 0700);
-}
-
-template<typename T> requires std::is_base_of_v<UplinkObject, T>
-void DeleteBTreeData(BTree<T*>& btree)
-{
-	const auto* const darray = btree.ConvertToDArray();
-
-	for (size_t i = 0; i < darray->Size(); i++)
-	{
-		if (!darray->ValidIndex(i))
-			continue;
-
-		delete darray->GetData(i);
-	}
-
-	delete darray;
-}
-
-template<typename T> requires std::is_base_of_v<UplinkObject, T>
-bool LoadBTree(BTree<T*>& btree, FILE* file)
-{
-	TODO_ABORT;
-}
-
-template<typename T> requires std::is_base_of_v<UplinkObject, T>
-void SaveBTree(BTree<T*>& btree, FILE* file)
-{
-	TODO_ABORT;
-}
-
-template<typename T> requires std::is_base_of_v<UplinkObject, T>
-void PrintBTree(BTree<T*>& btree)
-{
-	const auto* const darray = btree.ConvertToDArray();
-	const auto* const indices = btree.ConvertIndexToDArray();
-
-	for (size_t i = 0; i < darray->Size(); i++)
-	{
-		if (!darray->ValidIndex(i))
-			continue;
-
-		UplinkAssert(indices->ValidIndex(i));
-
-		std::println("Index = {}", indices->GetData(i));
-
-		const auto data = darray->GetData(i);
-		if (!data)
-		{
-			std::println("NULL");
-			continue;
-		}
-
-		data->Print();
-	}
-
-	delete indices;
-	delete darray;
 }

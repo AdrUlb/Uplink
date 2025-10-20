@@ -7,6 +7,11 @@ DArray<char*>* App::ListExistingGames()
 	TODO_ABORT;
 }
 
+void App::CoreDump()
+{
+	TODO_ABORT;
+}
+
 App::~App()
 {
 	if (!Closed())
@@ -31,7 +36,6 @@ void App::Set(const char* path, const char* version, const char* type, const cha
 bool App::Closed() { TODO_ABORT; }
 void App::CloseGame() { TODO_ABORT; }
 void App::Close() { TODO_ABORT; }
-void App::CoreDump() { TODO_ABORT; }
 
 void App::LoadGame(const char* user) { TODO_ABORT; }
 void App::SetNextLoadGame(const char* user) { TODO_ABORT; }

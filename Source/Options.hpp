@@ -17,6 +17,7 @@ class Options : public UplinkObject
 	char themeDescription_[0x400] = "";
 	BTree<ColourOption*> colours_;
 
+public:
 	~Options() override;
 	bool Load(FILE* file) override;
 	void Save(FILE* file) override;
@@ -24,7 +25,7 @@ class Options : public UplinkObject
 	void Update() override;
 	const char* GetID() override;
 
-	[[nodiscard]] Option* GetOption(const char* name) const;
+	[[nodiscard]] Option* GetOptionOrNull(const char* name) const;
 	[[nodiscard]] int GetOptionValue(const char* name) const;
 	[[nodiscard]] LList<Option*>* GetAllOptions(const char* query, bool getHidden) const;
 	[[nodiscard]] const ColourOption& GetColour(const char* name) const;
