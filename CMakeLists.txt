@@ -27,4 +27,4 @@ set(SOURCES
 		Source/Network.hpp)
 add_executable(Uplink ${SOURCES})
 target_compile_definitions(Uplink PRIVATE -DUPLINK_VERSION="${PROJECT_VERSION}")
-target_link_libraries(Uplink PRIVATE Tosser Redshirt Gucci)
+target_link_libraries(Uplink PRIVATE Tosser Redshirt Gucci crypto)

@@ -1,7 +1,10 @@
 #pragma once
 
+#include <cstddef>
+#include <cstdint>
 #include <cstdio>
 
+void RsFileCheckSum(FILE* file, uint8_t* buffer, size_t size);
 bool RsFileEncryptedNoVerify(const char* path);
 bool RsFileEncrypted(const char* path);
 FILE* RsFileOpen(const char* path, const char* mode);
