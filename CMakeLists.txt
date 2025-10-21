@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 4.0)
 
 set(CMAKE_CXX_STANDARD 23)
 
+add_compile_options(-Wall -Wextra)
+
 project(Uplink VERSION 1.55 LANGUAGES CXX)
 
 include_directories(${CMAKE_CURRENT_LIST_DIR})

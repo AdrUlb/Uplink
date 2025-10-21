@@ -47,6 +47,7 @@ static FILE* file_stdout = nullptr;
 #define DEFINE_SIGNAL_HANDLER(name, message) \
 [[noreturn]] static void name(int signum) \
 { \
+	(void)signum; \
 	std::println("\nAn Uplink Internal Error has occured: " message); \
 	if (file_stdout) \
 	{ \

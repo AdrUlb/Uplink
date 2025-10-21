@@ -312,12 +312,21 @@ bool RsEncryptFile(const char* path)
 	return filterFileInPlace(path, ".e", noHeader, writeRsEncryptedHeader, writeRsEncryptedCheckSum, encryptBuffer);
 }
 
-const char* RsArchiveFileOpen(const char* path)
+const char* RsArchiveFileOpen(const char* name)
 {
 	TODO_ABORT;
 }
 
-void RsArchiveFileClose(const char* path, FILE* file)
+FILE* RsArchiveFileOpen(const char* name, const char* mode)
+{
+	const auto path = RsArchiveFileOpen(name);
+	if (!path)
+		return nullptr;
+
+	return fopen(path, mode);
+}
+
+void RsArchiveFileClose(const char* name, FILE* file)
 {
 	TODO_ABORT;
 }

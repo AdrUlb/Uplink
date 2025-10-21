@@ -2,12 +2,12 @@
 #include "Util.hpp"
 #include "_.hpp"
 
-bool UplinkObject::Load(FILE* file)
+bool UplinkObject::Load(FILE*)
 {
 	return true;
 }
 
-void UplinkObject::Save(FILE* file) {}
+void UplinkObject::Save(FILE*) {}
 
 void UplinkObject::Print() {}
 
@@ -23,13 +23,13 @@ UplinkObjectId UplinkObject::GetOBJECTID()
 	return UplinkObjectId::None;
 }
 
-void UplinkObject::LoadID(FILE* file) {}
+void UplinkObject::LoadID(FILE*) {}
 
-void UplinkObject::SaveID(FILE* file) {}
+void UplinkObject::SaveID(FILE*) {}
 
-void UplinkObject::LoadID_END(FILE* file) {}
+void UplinkObject::LoadID_END(FILE*) {}
 
-void UplinkObject::SaveID_END(FILE* file) {}
+void UplinkObject::SaveID_END(FILE*) {}
 
 char* UplinkObject::GetID_END()
 {
@@ -39,7 +39,8 @@ char* UplinkObject::GetID_END()
 	return str;
 }
 
-UplinkObject* CreateUplinkObject(UplinkObjectId objectId)
+UplinkObject* CreateUplinkObject(const UplinkObjectId objectId)
 {
+	(void)objectId;
 	TODO_ABORT;
 }

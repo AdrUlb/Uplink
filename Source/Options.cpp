@@ -250,16 +250,16 @@ void Options::SetThemeName(const char* name)
 {
 	UplinkStrncpy(themeName_, name, sizeof(themeName_));
 
-	const char* filePath = ThemeFilename("theme.txt");
-	const auto* const rsFilePath = RsArchiveFileOpen(filePath);
+	const char* fileName = ThemeFilename("theme.txt");
+	const auto* const filePath = RsArchiveFileOpen(fileName);
 
-	if (!rsFilePath)
+	if (!filePath)
 	{
-		RsArchiveFileClose(filePath, nullptr);
-		delete filePath;
+		RsArchiveFileClose(fileName, nullptr);
+		delete fileName;
 	}
 
-	std::ifstream filestr(rsFilePath);
+	std::ifstream filestr(filePath);
 
 	char temp[0x40];
 
@@ -302,8 +302,8 @@ void Options::SetThemeName(const char* name)
 		}
 	}
 
-	RsArchiveFileClose(filePath, nullptr);
-	delete filePath;
+	RsArchiveFileClose(fileName, nullptr);
+	delete fileName;
 }
 
 void Options::CreateDefaultOptions()

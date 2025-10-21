@@ -189,7 +189,7 @@ void SaveBTree(const BTree<UplinkObject*>& btree, FILE* file)
 		fwrite(&itemCount, sizeof(itemCount), 1, file);
 
 		itemCount = 0;
-		for (int32_t i = 0; i < size && itemCount < BTREE_ITEMS_MAX; i++)
+		for (size_t i = 0; i < size && itemCount < BTREE_ITEMS_MAX; i++)
 		{
 			if (!darray->ValidIndex(i))
 				continue;
@@ -272,7 +272,7 @@ bool LoadBTree(BTree<char*>& btree, FILE* file)
 		return false;
 	}
 
-	for (int32_t i = 0; i < itemCount; i++)
+	for (size_t i = 0; i < itemCount; i++)
 	{
 		char* label = nullptr;
 		if (!LoadDynamicString(label, file))
@@ -305,7 +305,6 @@ void SaveBTree(const BTree<char*>& btree, FILE* file)
 	const auto size = darray->Size();
 
 	uint32_t itemCount = 0;
-
 	for (size_t i = 0; i < size; i++)
 		if (darray->ValidIndex(i))
 			itemCount++;

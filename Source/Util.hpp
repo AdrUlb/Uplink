@@ -92,7 +92,7 @@ __attribute__((always_inline)) inline void DeleteBTreeData(BTree<T*>& btree)
 #define UplinkSnprintf(buffer, max, format, args...) \
     do \
     { \
-        if (const auto result__ = snprintf(buffer, max, format, ##args); result__ < 0 || result__ >= max) \
+        if (const auto result__ = snprintf(buffer, max, format, ##args); result__ < 0 || static_cast<size_t>(result__) >= max) \
         { \
             std::print( \
                 "\n" \
