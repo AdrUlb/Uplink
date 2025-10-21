@@ -14,14 +14,14 @@ void BglSlashify(char* path)
 	}
 }
 
-bool BglOpenZipFile(FILE* file, const char* apppath, const char* id)
+bool BglOpenZipFile(FILE* archiveFile, const char* apppath, const char* id)
 {
 	TODO_ABORT;
 }
 
-bool BglOpenZipFile(const char* path, const char* apppath, const char* id)
+bool BglOpenZipFile(const char* archivePath, const char* apppath, const char* id)
 {
-	auto* file = fopen(path, "rb");
+	auto* file = fopen(archivePath, "rb");
 	if (!file)
 		return false;
 
@@ -31,6 +31,21 @@ bool BglOpenZipFile(const char* path, const char* apppath, const char* id)
 }
 
 void BglCloseZipFile(const char* id)
+{
+	TODO_ABORT;
+}
+
+void BglExtractAllFiles(const char* archivePath)
+{
+	TODO_ABORT;
+}
+
+bool BglFileLoaded(const char* name)
+{
+	TODO_ABORT;
+}
+
+bool BglExtractFile(const char* name, const char* extractPath)
 {
 	TODO_ABORT;
 }
@@ -45,22 +60,7 @@ void BglCloseAllFiles()
 	TODO_ABORT;
 }
 
-DArray<char*>* BglListFiles(char const* apppath, char const* dir, char const* ext)
-{
-	TODO_ABORT;
-}
-
-bool BglFileLoaded(const char* path)
-{
-	TODO_ABORT;
-}
-
-bool BglExtractFile(const char* path, const char* extractPath)
-{
-	TODO_ABORT;
-}
-
-void BglExtractAllFiles(const char* archivePath)
+DArray<char*>* BglListFiles(char const* apppath, char const* dir, char const* query)
 {
 	TODO_ABORT;
 }

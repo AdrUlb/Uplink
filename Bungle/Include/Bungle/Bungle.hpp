@@ -25,13 +25,12 @@ struct LocalFileHeader
 };
 
 void BglSlashify(char* path);
-bool BglOpenZipFile(FILE* file, const char* apppath, const char* id);
-bool BglOpenZipFile(const char* path, const char* apppath, const char* id);
+bool BglOpenZipFile(FILE* archiveFile, const char* apppath, const char* id);
+bool BglOpenZipFile(const char* archivePath, const char* apppath, const char* id);
 void BglCloseZipFile(const char* id);
+void BglExtractAllFiles(const char* archivePath);
+bool BglFileLoaded(const char* name);
+bool BglExtractFile(const char* name, const char* extractedPath);
 void BglCloseAllFiles(BTree<LocalFileHeader*>* files);
 void BglCloseAllFiles();
-DArray<char*>* BglListFiles(char const* apppath, char const* dir, char const* ext);
-bool BglFileLoaded(const char* path);
-bool BglExtractFile(const char* path, const char* extractedPath);
-void BglExtractAllFiles(const char* archivePath);
-
+DArray<char*>* BglListFiles(char const* apppath, char const* dir, char const* query);

@@ -21,7 +21,7 @@ void RsCleanUp();
 bool RsLoadArchive(const char* id);
 void RsCloseArchive(const char* id);
 bool RsArchiveFileLoaded(const char* filename);
-DArray<char*>* RsListArchive(const char* dir, const char* ext);
+DArray<char*>* RsListArchive(const char* dir, const char* query);
 const char* RsArchiveFileOpen(const char* filename);
 FILE* RsArchiveFileOpen(const char* filename, const char* mode);
 void RsArchiveFileClose(const char* filename, FILE* file);

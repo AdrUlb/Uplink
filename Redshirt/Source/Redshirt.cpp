@@ -375,7 +375,7 @@ bool RsLoadArchive(const char* id)
 
 	if (!file)
 	{
-		size_t rsapppathLen = strlen(rsapppath);
+		const size_t rsapppathLen = strlen(rsapppath);
 
 		if (rsapppathLen <= 4)
 			return false;
@@ -427,9 +427,9 @@ bool RsArchiveFileLoaded(const char* filename)
 	return BglFileLoaded(path.c_str());
 }
 
-DArray<char*>* RsListArchive(const char* dir, const char* ext)
+DArray<char*>* RsListArchive(const char* dir, const char* query)
 {
-	auto* const result = BglListFiles(rsapppath, dir, ext);
+	auto* const result = BglListFiles(rsapppath, dir, query);
 
 	for (size_t i = 0; i < result->Size(); i++)
 	{
