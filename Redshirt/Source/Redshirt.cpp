@@ -154,7 +154,7 @@ static bool filterFile(const char* path, const char* destPath,
 
 	if (!filterStream(file, destFile, filterFunc))
 	{
-		std::println("redshirt: failed to write containning bytes!");
+		std::println("redshirt: failed to write content!");
 		goto fail;
 	}
 
