@@ -1,7 +1,6 @@
 #include "Redshirt/Redshirt.hpp"
 
 #include <cassert>
-#include <cstdint>
 #include <cstring>
 #include <dirent.h>
 #include <ostream>
@@ -9,7 +8,7 @@
 #include <unistd.h>
 #include <bits/forward_list.h>
 #include <openssl/evp.h>
-#include "Bungle/Bungle.hpp"
+#include <sys/stat.h>
 
 #include "_.hpp"
 
@@ -52,9 +51,8 @@ static void HashFinal(EVP_MD_CTX* context, uint8_t* buffer, size_t size)
 	}
 }
 
-static bool noHeader(FILE* file)
+static bool noHeader(FILE*)
 {
-	(void)file;
 	return true;
 }
 
@@ -204,6 +202,12 @@ bool RsFileExists(const char* path)
 	return true;
 }
 
+bool RsMakeDirectory(char const* path)
+
+{
+	return mkdir(path, 0700) == 0;
+}
+
 void RsDeleteDirectory(const char* path)
 {
 	rmdir(path);
@@ -331,59 +335,6 @@ bool RsDecryptFile(const char* path)
 	return filterFileInPlace(path, ".d", readRsEncryptedHeader, noHeader, noHeader, decryptBuffer);
 }
 
-const char* RsArchiveFileOpen(const char* name)
-{
-	const auto path = std::format("{}{}", rsapppath, name);
-
-	if (RsFileExists(path.c_str()))
-	{
-		strcpy(tempfilename, path.c_str());
-		return tempfilename;
-	}
-
-	if (BglFileLoaded(path.c_str()))
-	{
-		const auto* ext = strrchr(path.c_str(), '.');
-		assert(ext);
-
-		for (size_t i = 0; i < 3; i++)
-		{
-			const auto extractedPath = std::format("{}temp{}{}", tempdir, i, ext);
-
-			if (BglExtractFile(path.c_str(), extractedPath.c_str()))
-			{
-				strcpy(tempfilename, extractedPath.c_str());
-				break;
-			}
-		}
-	}
-
-	std::println("REDSHIRT : Failed to load file : %s", path.c_str());
-	return nullptr;
-}
-
-FILE* RsArchiveFileOpen(const char* name, const char* mode)
-{
-	const auto path = RsArchiveFileOpen(name);
-	if (!path)
-		return nullptr;
-
-	return fopen(path, mode);
-}
-
-void RsArchiveFileClose(const char* name, FILE* file)
-{
-	if (file)
-		fclose(file);
-
-	const auto* const ext = strrchr(name, '.');
-	assert(ext);
-
-	// TODO: not use temp0.xxx/temp1.xxx/temp2.xxx as filenames for opened archives maybe?? this sucks.
-	for (size_t i = 0; i < 3; i++)
-		remove(std::format("{}temp{}{}", tempdir, i, ext).c_str());
-}
-
 void RsInitialise(const char* appPath)
 {
 	strcpy(rsapppath, appPath);
@@ -415,4 +366,135 @@ void RsCleanUp()
 
 	RsDeleteDirectory(tempdir);
 	BglCloseAllFiles();
+}
+
+bool RsLoadArchive(const char* id)
+{
+	auto path = std::format("{}{}", rsapppath, id);
+	auto* file = RsFileOpen(path.c_str(), "rb");
+
+	if (!file)
+	{
+		size_t rsapppathLen = strlen(rsapppath);
+
+		if (rsapppathLen <= 4)
+			return false;
+
+		const auto c1 = rsapppath[rsapppathLen - 5];
+		auto& c2 = rsapppath[rsapppathLen - 4];
+		const auto c3 = rsapppath[rsapppathLen - 3];
+		const auto c4 = rsapppath[rsapppathLen - 2];
+		const auto c5 = rsapppath[rsapppathLen - 1];
+
+		if ((c1 != '\\' && c1 != '/') ||
+		    (c2 != 'l' && c2 != 'L') ||
+		    (c3 != 'i' && c3 != 'I') ||
+		    (c4 != 'b' && c4 != 'B') ||
+		    (c5 != '\\' && c5 != '/'))
+			return false;
+
+		c2 = 0;
+		path += id;
+		file = RsFileOpen(path.c_str(), "rb");
+
+		if (!file)
+			return false;
+	}
+
+	const auto success = BglOpenZipFile(file, rsapppath, id);
+	RsFileClose(id, file);
+
+	if (!success)
+		std::println("Failed to load data archive %s", id);
+	else
+		std::println("Successfully loaded data archive %s", id);
+
+	return success;
+}
+
+void RsCloseArchive(const char* id)
+{
+	BglCloseZipFile(id);
+}
+
+bool RsArchiveFileLoaded(const char* filename)
+{
+	const auto path = std::format("{}{}", rsapppath, filename);
+
+	if (RsFileExists(path.c_str()))
+		return true;
+
+	return BglFileLoaded(path.c_str());
+}
+
+DArray<char*>* RsListArchive(const char* dir, const char* ext)
+{
+	auto* const result = BglListFiles(rsapppath, dir, ext);
+
+	for (size_t i = 0; i < result->Size(); i++)
+	{
+		if (!result->ValidIndex(i))
+			continue;
+
+		const auto* const filenameWithApppath = result->GetData(i);
+
+		auto* const filename = new char[strlen(filenameWithApppath) - strlen(rsapppath) + 1];
+		strcpy(filename, filenameWithApppath + strlen(rsapppath));
+		result->PutData(filename, i);
+	}
+
+	return result;
+}
+
+const char* RsArchiveFileOpen(const char* filename)
+{
+	const auto path = std::format("{}{}", rsapppath, filename);
+
+	if (RsFileExists(path.c_str()))
+	{
+		strcpy(tempfilename, path.c_str());
+		return tempfilename;
+	}
+
+	if (BglFileLoaded(path.c_str()))
+	{
+		const auto* ext = strrchr(path.c_str(), '.');
+		assert(ext);
+
+		for (size_t i = 0; i < 3; i++)
+		{
+			const auto extractedPath = std::format("{}temp{}{}", tempdir, i, ext);
+
+			if (BglExtractFile(path.c_str(), extractedPath.c_str()))
+			{
+				strcpy(tempfilename, extractedPath.c_str());
+				break;
+			}
+		}
+	}
+
+	std::println("REDSHIRT : Failed to load file : %s", path);
+	return nullptr;
+}
+
+FILE* RsArchiveFileOpen(const char* filename, const char* mode)
+{
+	const auto path = RsArchiveFileOpen(filename);
+	if (!path)
+		return nullptr;
+
+	return fopen(path, mode);
+}
+
+void RsArchiveFileClose(const char* filename, FILE* file)
+{
+	if (file)
+		fclose(file);
+
+	const auto* const ext = strrchr(filename, '.');
+	assert(ext);
+
+	// TODO: not use temp0.xxx/temp1.xxx/temp2.xxx as filenames for opened archives maybe?? this sucks.
+	for (size_t i = 0; i < 3; i++)
+		remove(std::format("{}temp{}{}", tempdir, i, ext).c_str());
 }

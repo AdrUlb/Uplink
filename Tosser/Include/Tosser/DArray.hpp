@@ -109,6 +109,13 @@ public:
 		valid_[index] = true;
 	}
 
+	void PutData(const T& value, size_t index)
+	{
+		assert(index < size_);
+		data_[index] = value;
+		valid_[index] = true;
+	}
+
 	void RemoveData(const size_t index) const
 	{
 		assert(index < size_);

@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 4.0)
 set(CMAKE_CXX_STANDARD 23)
 
 add_compile_options(-Wall -Wextra)
+add_compile_options(-Wno-unused-variable -Wno-unused-parameter)
 
 project(Uplink VERSION 1.55 LANGUAGES CXX)
 

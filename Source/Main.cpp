@@ -2,8 +2,9 @@
 #include <cstdio>
 #include <print>
 #include "Uplink.hpp"
-#include "_.hpp"
 #include "Gucci/Gucci.hpp"
+
+#include "_.hpp"
 
 static FILE* file_stdout = nullptr;
 

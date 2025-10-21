@@ -1,5 +1,6 @@
 #include "UplinkObject.hpp"
 #include "Util.hpp"
+
 #include "_.hpp"
 
 bool UplinkObject::Load(FILE*)
