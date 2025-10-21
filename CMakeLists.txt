@@ -9,6 +9,7 @@ project(Uplink VERSION 1.55 LANGUAGES CXX)
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 
 add_subdirectory(Tosser)
+add_subdirectory(Bungle)
 add_subdirectory(Redshirt)
 add_subdirectory(Gucci)
 

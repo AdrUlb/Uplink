@@ -1,19 +1,25 @@
-#include "../Include/Redshirt/Redshirt.hpp"
+#include "Redshirt/Redshirt.hpp"
 
+#include <cassert>
 #include <cstdint>
 #include <cstring>
+#include <dirent.h>
 #include <ostream>
 #include <print>
+#include <unistd.h>
 #include <bits/forward_list.h>
 #include <openssl/evp.h>
+#include "Bungle/Bungle.hpp"
 
-#include "../../_.hpp"
+#include "_.hpp"
 
 typedef void (*FilterFunc)(uint8_t* buffer, size_t size);
 typedef bool (*ReadWriteFunc)(FILE* file);
 
 static constexpr size_t HASH_RESULT_SIZE = 20;
 
+static bool rsInitialized = false;
+static char rsapppath[0x100] { };
 static char tempdir[0x100] { };
 static char tempfilename[0x100] { };
 
@@ -198,6 +204,11 @@ bool RsFileExists(const char* path)
 	return true;
 }
 
+void RsDeleteDirectory(const char* path)
+{
+	rmdir(path);
+}
+
 const char* RsBasename(const char* path)
 {
 	char const* result = path;
@@ -312,9 +323,43 @@ bool RsEncryptFile(const char* path)
 	return filterFileInPlace(path, ".e", noHeader, writeRsEncryptedHeader, writeRsEncryptedCheckSum, encryptBuffer);
 }
 
+bool RsDecryptFile(const char* path)
+{
+	if (!RsFileEncrypted(path))
+		return true;
+
+	return filterFileInPlace(path, ".d", readRsEncryptedHeader, noHeader, noHeader, decryptBuffer);
+}
+
 const char* RsArchiveFileOpen(const char* name)
 {
-	TODO_ABORT;
+	const auto path = std::format("{}{}", rsapppath, name);
+
+	if (RsFileExists(path.c_str()))
+	{
+		strcpy(tempfilename, path.c_str());
+		return tempfilename;
+	}
+
+	if (BglFileLoaded(path.c_str()))
+	{
+		const auto* ext = strrchr(path.c_str(), '.');
+		assert(ext);
+
+		for (size_t i = 0; i < 3; i++)
+		{
+			const auto extractedPath = std::format("{}temp{}{}", tempdir, i, ext);
+
+			if (BglExtractFile(path.c_str(), extractedPath.c_str()))
+			{
+				strcpy(tempfilename, extractedPath.c_str());
+				break;
+			}
+		}
+	}
+
+	std::println("REDSHIRT : Failed to load file : %s", path.c_str());
+	return nullptr;
 }
 
 FILE* RsArchiveFileOpen(const char* name, const char* mode)
@@ -328,5 +373,46 @@ FILE* RsArchiveFileOpen(const char* name, const char* mode)
 
 void RsArchiveFileClose(const char* name, FILE* file)
 {
-	TODO_ABORT;
+	if (file)
+		fclose(file);
+
+	const auto* const ext = strrchr(name, '.');
+	assert(ext);
+
+	// TODO: not use temp0.xxx/temp1.xxx/temp2.xxx as filenames for opened archives maybe?? this sucks.
+	for (size_t i = 0; i < 3; i++)
+		remove(std::format("{}temp{}{}", tempdir, i, ext).c_str());
+}
+
+void RsInitialise(const char* appPath)
+{
+	strcpy(rsapppath, appPath);
+	strcpy(tempdir, "/tmp/uplink-XXXXXX");
+
+	if (!mkdtemp(tempdir))
+	{
+		std::println("Failed to make temporary directory");
+		abort();
+	}
+
+	rsInitialized = true;
+	tempdir[strlen(tempdir)] = '/';
+	atexit(RsCleanUp);
+}
+
+void RsCleanUp()
+{
+	if (!rsInitialized)
+		return;
+
+	rsInitialized = false;
+	auto* const dir = opendir(tempdir);
+	if (dir)
+	{
+		for (auto* dirent = readdir(dir); dirent; dirent = readdir(dir))
+			remove(std::format("{}{}", tempdir, dirent->d_name).c_str());
+	}
+
+	RsDeleteDirectory(tempdir);
+	BglCloseAllFiles();
 }
