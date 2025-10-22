@@ -1,7 +1,5 @@
 #include "Uplink.hpp"
 
-#include "Redshirt/Redshirt.hpp"
-
 #include "_.hpp"
 
 App* gApp = nullptr;

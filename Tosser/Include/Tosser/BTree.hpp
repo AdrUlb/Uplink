@@ -9,7 +9,7 @@ template<typename T> class BTree
 	BTree* left_ = nullptr;
 	BTree* right_ = nullptr;
 	T data_;
-	char* label_;
+	char* id_;
 
 	static void RecursiveConvertToDArray(DArray<T>* const darray, const BTree* tree)
 	{
@@ -17,7 +17,7 @@ template<typename T> class BTree
 
 		for (auto* current = tree; current; current = current->Right())
 		{
-			if (current->label_)
+			if (current->id_)
 				darray->PutData(current->data_);
 
 			RecursiveConvertToDArray(darray, current->Left());
@@ -30,20 +30,30 @@ template<typename T> class BTree
 
 		for (auto* current = tree; current; current = current->Right())
 		{
-			if (current->label_)
-				darray->PutData(current->label_);
+			if (current->id_)
+				darray->PutData(current->id_);
 
 			RecursiveConvertIndexToDArray(darray, current->Left());
 		}
 	}
 
+	void AppendRight(BTree* node)
+	{
+		auto* current = this;
+
+		while (current->Right())
+			current = current->Right();
+
+		current->right_ = node;
+	}
+
 public:
-	BTree() : data_(0), label_(nullptr) {}
+	BTree() : data_(0), id_(nullptr) {}
 
 	BTree(const char* label, const T& data) : data_(data)
 	{
-		label_ = new char[strlen(label) + 1];
-		strcpy(label_, label);
+		id_ = new char[strlen(label) + 1];
+		strcpy(id_, label);
 	}
 
 	BTree(const BTree&) = delete;
@@ -52,6 +62,11 @@ public:
 	~BTree()
 	{
 		Empty();
+	}
+
+	const char* Id() const
+	{
+		return id_;
 	}
 
 	BTree* Left() const
@@ -68,9 +83,9 @@ public:
 	{
 		auto* current = this;
 
-		while (current->label_)
+		while (current->id_)
 		{
-			const auto cmp = strcmp(label, current->label_);
+			const auto cmp = strcmp(label, current->id_);
 
 			if (cmp > 0)
 			{
@@ -94,8 +109,8 @@ public:
 			}
 		}
 
-		current->label_ = new char[strlen(label) + 1];
-		strcpy(current->label_, label);
+		current->id_ = new char[strlen(label) + 1];
+		strcpy(current->id_, label);
 		current->data_ = data;
 	}
 
@@ -103,9 +118,9 @@ public:
 	{
 		auto* current = this;
 
-		while (current->label_)
+		while (current->id_)
 		{
-			const auto cmp = strcmp(label, current->label_);
+			const auto cmp = strcmp(label, current->id_);
 
 			if (cmp == 0)
 				return current;
@@ -138,6 +153,95 @@ public:
 		return data_;
 	}
 
+	void RemoveData(const char* label)
+	{
+		assert(label);
+
+		auto* current = this;
+		while (true)
+		{
+			const auto cmp = strcmp(label, current->id_);
+
+			// FIXME: Why are we additionally checking if the next node to traverse towards is the target node instead of simply letting the next call check
+
+			// Traverse left
+			if (cmp < 0)
+			{
+				// Nowhere to go
+				if (!current->Left())
+					break;
+
+				// Left node is the target node and does not have any children
+				if (strcmp(current->Left()->id_, label) == 0 && !current->Left()->Left() && !current->Left()->Right())
+				{
+					// Remove node
+					// FIXME: delete node before setting to null
+					current->left_ = nullptr;
+					break;
+				}
+
+				current = current->Left();
+				continue;
+			}
+
+			// Traverse right
+			if (cmp > 0)
+			{
+				// Nowhere to go
+				if (!current->Right())
+					break;
+
+				// Right node is the target node and does not have any children
+				if (!strcmp(current->Right()->id_, label) && !current->Right()->Left() && !current->Right()->Right())
+				{
+					// Remove node
+					// FIXME: delete node before setting to null
+					current->right_ = nullptr;
+					break;
+				}
+
+				current = current->Right();
+				continue;
+			}
+
+			// cmp == 0, current is target node
+
+			// There is a child node to the left
+			if (current->Left())
+			{
+				auto* rightNode = current->Right();
+
+				// Copy all data from left node into current node
+				current->id_ = new char[strlen(current->Left()->id_) + 1];
+				strcpy(current->id_, current->Left()->id_);
+				current->left_ = current->Left()->Left();
+				current->right_ = current->Left()->Right();
+				current->data_ = current->Left()->data_;
+
+				// Append original right node
+				current->AppendRight(rightNode);
+				break;
+			}
+
+			// There is a child node to the right (none to the left)
+			if (current->Right())
+			{
+				// Copy all data from right node to this node
+				current->id_ = new char[strlen(current->Right()->id_) + 1];
+				strcpy(current->id_, current->Right()->id_);
+
+				current->left_ = current->Right()->Left();
+				current->right_ = current->Right()->Right();
+				current->data_ = current->Right()->data_;
+				break;
+			}
+
+			current->id_ = nullptr;
+
+			break;
+		}
+	}
+
 	void SetData(const T& data)
 	{
 		data_ = data;
@@ -156,11 +260,11 @@ public:
 	{
 		delete left_;
 		delete right_;
-		delete[] label_;
+		delete[] id_;
 
 		left_ = nullptr;
 		right_ = nullptr;
-		label_ = nullptr;
+		id_ = nullptr;
 	}
 
 	[[nodiscard]] DArray<T>* ConvertToDArray() const

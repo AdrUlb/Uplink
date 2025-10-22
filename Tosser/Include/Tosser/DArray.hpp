@@ -94,13 +94,16 @@ public:
 	{
 		size_t index = 0;
 
-		while (valid_[index])
+		while (true)
 		{
 			if (index == size_)
 			{
 				SetSize(size_ + stepSize_);
 				break;
 			}
+
+			if (!valid_[index])
+				break;
 
 			index++;
 		}

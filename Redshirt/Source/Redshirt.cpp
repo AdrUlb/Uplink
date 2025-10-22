@@ -18,7 +18,7 @@ typedef bool (*ReadWriteFunc)(FILE* file);
 static constexpr size_t HASH_RESULT_SIZE = 20;
 
 static bool rsInitialized = false;
-static char rsapppath[0x100] { };
+std::string rsapppath = "";
 static char tempdir[0x100] { };
 static char tempfilename[0x100] { };
 
@@ -337,7 +337,12 @@ bool RsDecryptFile(const char* path)
 
 void RsInitialise(const char* appPath)
 {
-	strcpy(rsapppath, appPath);
+	rsapppath = appPath;
+	if (rsapppath[rsapppath.size() - 1] != '/')
+	{
+		rsapppath += '/';
+	}
+
 	strcpy(tempdir, "/tmp/uplink-XXXXXX");
 
 	if (!mkdtemp(tempdir))
@@ -375,39 +380,33 @@ bool RsLoadArchive(const char* id)
 
 	if (!file)
 	{
-		const size_t rsapppathLen = strlen(rsapppath);
+		const size_t rsapppathLen = rsapppath.size();
 
 		if (rsapppathLen <= 4)
 			return false;
 
-		const auto c1 = rsapppath[rsapppathLen - 5];
-		auto& c2 = rsapppath[rsapppathLen - 4];
-		const auto c3 = rsapppath[rsapppathLen - 3];
-		const auto c4 = rsapppath[rsapppathLen - 2];
-		const auto c5 = rsapppath[rsapppathLen - 1];
+		auto index = rsapppath.find("/lib/");
 
-		if ((c1 != '\\' && c1 != '/') ||
-		    (c2 != 'l' && c2 != 'L') ||
-		    (c3 != 'i' && c3 != 'I') ||
-		    (c4 != 'b' && c4 != 'B') ||
-		    (c5 != '\\' && c5 != '/'))
-			return false;
+		if (index == std::string::npos)
+			index = rsapppath.find("/LIB/");
+		if (index == std::string::npos)
+			index = rsapppath.find("\\lib\\");
+		if (index == std::string::npos)
+			index = rsapppath.find("\\LIB\\");
 
-		c2 = 0;
-		path += id;
+		path = std::format("{}{}", rsapppath.substr(0, index + 1), id);
 		file = RsFileOpen(path.c_str(), "rb");
-
 		if (!file)
 			return false;
 	}
 
-	const auto success = BglOpenZipFile(file, rsapppath, id);
+	const auto success = BglOpenZipFile(file, rsapppath.c_str(), id);
 	RsFileClose(id, file);
 
 	if (!success)
-		std::println("Failed to load data archive %s", id);
+		std::println("Failed to load data archive {}", id);
 	else
-		std::println("Successfully loaded data archive %s", id);
+		std::println("Successfully loaded data archive {}", id);
 
 	return success;
 }
@@ -427,9 +426,9 @@ bool RsArchiveFileLoaded(const char* filename)
 	return BglFileLoaded(path.c_str());
 }
 
-DArray<char*>* RsListArchive(const char* dir, const char* query)
+DArray<const char*>* RsListArchive(const char* dir, const char* query)
 {
-	auto* const result = BglListFiles(rsapppath, dir, query);
+	auto* const result = BglListFiles(rsapppath.c_str(), dir, query);
 
 	for (size_t i = 0; i < result->Size(); i++)
 	{
@@ -438,8 +437,8 @@ DArray<char*>* RsListArchive(const char* dir, const char* query)
 
 		const auto* const filenameWithApppath = result->GetData(i);
 
-		auto* const filename = new char[strlen(filenameWithApppath) - strlen(rsapppath) + 1];
-		strcpy(filename, filenameWithApppath + strlen(rsapppath));
+		auto* const filename = new char[strlen(filenameWithApppath) - rsapppath.size() + 1];
+		strcpy(filename, filenameWithApppath + rsapppath.size());
 		result->PutData(filename, i);
 	}
 
@@ -468,12 +467,12 @@ const char* RsArchiveFileOpen(const char* filename)
 			if (BglExtractFile(path.c_str(), extractedPath.c_str()))
 			{
 				strcpy(tempfilename, extractedPath.c_str());
-				break;
+				return tempfilename;
 			}
 		}
 	}
 
-	std::println("REDSHIRT : Failed to load file : %s", path);
+	std::println("REDSHIRT : Failed to load file : {}", path);
 	return nullptr;
 }
 
