@@ -39,5 +39,5 @@ public:
 	void CreateDefaultOptions();
 	void RequestShutdownChange(const char* name, int value);
 	void ApplyShutdownChanges();
-	[[nodiscard]] char* ThemeFilename(const char* filename);
+	[[nodiscard]] std::string ThemeFilename(const char* filename);
 };

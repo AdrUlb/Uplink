@@ -250,14 +250,11 @@ void Options::SetThemeName(const char* name)
 {
 	UplinkStrncpy(themeName_, name, sizeof(themeName_));
 
-	const char* fileName = ThemeFilename("theme.txt");
-	const auto* const filePath = RsArchiveFileOpen(fileName);
+	const auto fileName = ThemeFilename("theme.txt");
+	const auto* const filePath = RsArchiveFileOpen(fileName.c_str());
 
 	if (!filePath)
-	{
-		RsArchiveFileClose(fileName, nullptr);
-		delete fileName;
-	}
+		RsArchiveFileClose(fileName.c_str(), nullptr);
 
 	std::ifstream filestr(filePath);
 
@@ -302,8 +299,7 @@ void Options::SetThemeName(const char* name)
 		}
 	}
 
-	RsArchiveFileClose(fileName, nullptr);
-	delete fileName;
+	RsArchiveFileClose(fileName.c_str(), nullptr);
 }
 
 void Options::CreateDefaultOptions()
@@ -370,11 +366,21 @@ void Options::CreateDefaultOptions()
 	if (!GetOptionOrNull("sound_musicenabled"))
 		SetOptionValue("sound_musicenabled", true, "Enables or disables music", true, true);
 
-	GetOptionOrNull("graphics_softwarerendering")->SetVisible(false);
-	GetOptionOrNull("graphics_screenwidth")->SetVisible(false);
-	GetOptionOrNull("graphics_screenheight")->SetVisible(false);
-	GetOptionOrNull("graphics_screendepth")->SetVisible(false);
-	GetOptionOrNull("graphics_screenrefresh")->SetVisible(false);
+	const auto optionSoftwareRendering = GetOptionOrNull("graphics_softwarerendering");
+	if (optionSoftwareRendering)
+		optionSoftwareRendering->SetVisible(false);
+	const auto optionScreenWidth = GetOptionOrNull("graphics_screenwidth");
+	if (optionScreenWidth)
+		optionScreenWidth->SetVisible(false);
+	const auto optionScreenHeight = GetOptionOrNull("graphics_screenheight");
+	if (optionScreenHeight)
+		optionScreenHeight->SetVisible(false);
+	const auto optionScreenDepth = GetOptionOrNull("graphics_screendepth");
+	if (optionScreenDepth)
+		optionScreenDepth->SetVisible(false);
+	const auto optionScreenRefresh = GetOptionOrNull("graphics_screenrefresh");
+	if (optionScreenRefresh)
+		optionScreenRefresh->SetVisible(false);
 }
 
 void Options::RequestShutdownChange(const char* name, const int value)
@@ -399,27 +405,15 @@ void Options::ApplyShutdownChanges()
 	}
 }
 
-char* Options::ThemeFilename(const char* filename)
+std::string Options::ThemeFilename(const char* filename)
 {
-	auto* result = new char[0x100];
-
 	if (strcmp(themeName_, "graphics") == 0)
-	{
-		UplinkSnprintf(result, 0x100, "graphics/%s", filename);
-		return result;
-	}
+		return std::format("graphics/{}", filename);
 
-	char filepath[0x100];
-	UplinkSnprintf(filepath, 0x100, "%s%s/%s", gApp->GetPath(), themeName_, filename);
+	const auto filepath = std::format("{}{}/{}", gApp->GetPath(), themeName_, filename);
 
-	if (DoesFileExist(filepath))
-	{
-		UplinkSnprintf(result, 0x100, "%s/%s", themeName_, filename);
-	}
-	else
-	{
-		UplinkSnprintf(result, 0x100, "graphics/%s", filename);
-	}
+	if (!DoesFileExist(filepath.c_str()))
+		return std::format("graphics/{}", filename);
 
-	return result;
+	return std::format("{}/{}", themeName_, filename);
 }

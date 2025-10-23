@@ -27,7 +27,7 @@ void PrintBTree(const BTree<char*>& btree);
 void DeleteBTreeData(const BTree<char*>& btree);
 
 void EmptyDirectory(const char* path);
-std::string GetFilePath(const std::string_view path);
+std::string GetFilePath(std::string_view path);
 
 // ReSharper disable CppRedundantInlineSpecifier
 template<typename T> requires (std::is_base_of_v<UplinkObject, T> && !std::is_same_v<UplinkObject, T>)

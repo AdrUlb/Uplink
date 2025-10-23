@@ -7,71 +7,50 @@
 FILE* file_stdout = nullptr;
 App* gApp = nullptr;
 
-static char* vmg57670648335164_br_find_exe(uint32_t* outErrorCode)
+std::optional<std::string> FindExe()
 {
-	auto* buffer = static_cast<char*>(malloc(0x1080));
+	std::string procExe;
+	procExe.resize(0xFFF);
 
-	if (!buffer)
+	const auto procExeLength = readlink("/proc/self/exe", procExe.data(), 0xFFF);
+	if (procExeLength > 0)
 	{
-		if (outErrorCode)
-			*outErrorCode = 0;
-		return nullptr;
-	}
-
-	const auto procExeLength = readlink("/proc/self/exe", buffer, 0x1080);
-	if (procExeLength != -1)
-	{
-		buffer[procExeLength] = 0;
-		return buffer;
+		procExe.resize(procExeLength);
+		return procExe;
 	}
 
 	auto* mapsFile = fopen("/proc/self/maps", "r");
 
 	if (!mapsFile)
-	{
-		free(buffer);
+		return { };
 
-		if (outErrorCode)
-			*outErrorCode = 1;
-		return nullptr;
-	}
-
-	if (!fgets(buffer, 0x1080, mapsFile))
+	std::string maps;
+	maps.resize(0x1080);
+	if (!fgets(maps.data(), 0x1080, mapsFile))
 	{
 		fclose(mapsFile);
-		free(buffer);
-
-		if (outErrorCode)
-			*outErrorCode = 2;
-		return nullptr;
+		return { };
 	}
+	maps.resize(strlen(maps.data()));
 
-	const auto mapsLength = strlen(buffer);
-	if (mapsLength)
+	if (!maps.empty())
 	{
-		if (buffer[mapsLength - 1] == '\n')
-			buffer[mapsLength - 1] = 0;
+		if (maps[maps.size() - 1] == '\n')
+			maps.resize(maps.size() - 1);
 
-		const char* mapsPathname = strchr(buffer, '/');
-		const char* perms = strstr(buffer, " r-xp ");
+		const auto pathnameIndex = maps.find('/');
+		const auto permsIndex = maps.find(" r-xp ");
 
-		if (perms && mapsPathname)
+		if (pathnameIndex != std::string::npos && permsIndex != std::string::npos)
 		{
-			auto* const ret = strdup(mapsPathname);
-			free(buffer);
 			fclose(mapsFile);
-			return ret;
+			return maps.substr(pathnameIndex);
 		}
 	}
 
 	fclose(mapsFile);
-	free(buffer);
 
-	if (!outErrorCode)
-		return nullptr;
-
-	*outErrorCode = 3;
-	return nullptr;
+	return { };
 }
 
 static void Init_App(char const* exePath)
@@ -155,12 +134,10 @@ void RunUplink(const int argc, char* argv[])
 			return std::println("{}", UPLINK_VERSION);
 	}
 
-	const auto* path = "/opt/uk.co.introversion.uplink-full/data.dat";
+	auto path = FindExe();
+	assert(path);
 
-	if (!DoesFileExist(path))
-		path = vmg57670648335164_br_find_exe(nullptr);
-
-	Init_App(path);
+	Init_App(path->c_str());
 	Init_Options(argc, argv);
 
 	if (VerifyLegitAndCodeCardCheck() && Load_Data())
