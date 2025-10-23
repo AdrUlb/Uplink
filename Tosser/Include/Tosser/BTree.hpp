@@ -9,7 +9,7 @@ template<typename T> class BTree
 	BTree* left_ = nullptr;
 	BTree* right_ = nullptr;
 	T data_;
-	char* id_;
+	std::optional<std::string> id_;
 
 	static void RecursiveConvertToDArray(DArray<T>* const darray, const BTree* tree)
 	{
@@ -31,7 +31,7 @@ template<typename T> class BTree
 		for (auto* current = tree; current; current = current->Right())
 		{
 			if (current->id_)
-				darray->PutData(current->id_);
+				darray->PutData(current->id_->c_str());
 
 			RecursiveConvertIndexToDArray(darray, current->Left());
 		}
@@ -48,13 +48,9 @@ template<typename T> class BTree
 	}
 
 public:
-	BTree() : data_(0), id_(nullptr) {}
+	BTree() : data_(0), id_({ }) {}
 
-	BTree(const char* label, const T& data) : data_(data)
-	{
-		id_ = new char[strlen(label) + 1];
-		strcpy(id_, label);
-	}
+	BTree(const char* label, const T& data) : data_(data), id_(label) {}
 
 	BTree(const BTree&) = delete;
 	BTree& operator=(const BTree&) = delete;
@@ -66,7 +62,7 @@ public:
 
 	const char* Id() const
 	{
-		return id_;
+		return id_->c_str();
 	}
 
 	BTree* Left() const
@@ -85,7 +81,7 @@ public:
 
 		while (current->id_)
 		{
-			const auto cmp = strcmp(label, current->id_);
+			const auto cmp = strcmp(label, current->id_->c_str());
 
 			if (cmp > 0)
 			{
@@ -109,8 +105,7 @@ public:
 			}
 		}
 
-		current->id_ = new char[strlen(label) + 1];
-		strcpy(current->id_, label);
+		current->id_ = label;
 		current->data_ = data;
 	}
 
@@ -120,7 +115,7 @@ public:
 
 		while (current->id_)
 		{
-			const auto cmp = strcmp(label, current->id_);
+			const auto cmp = strcmp(label, current->id_->c_str());
 
 			if (cmp == 0)
 				return current;
@@ -160,7 +155,7 @@ public:
 		auto* current = this;
 		while (true)
 		{
-			const auto cmp = strcmp(label, current->id_);
+			const auto cmp = strcmp(label, current->id_->c_str());
 
 			// FIXME: Why are we additionally checking if the next node to traverse towards is the target node instead of simply letting the next call check
 
@@ -172,7 +167,7 @@ public:
 					break;
 
 				// Left node is the target node and does not have any children
-				if (strcmp(current->Left()->id_, label) == 0 && !current->Left()->Left() && !current->Left()->Right())
+				if (strcmp(current->Left()->id_->c_str(), label) == 0 && !current->Left()->Left() && !current->Left()->Right())
 				{
 					// Remove node
 					// FIXME: delete node before setting to null
@@ -192,7 +187,7 @@ public:
 					break;
 
 				// Right node is the target node and does not have any children
-				if (!strcmp(current->Right()->id_, label) && !current->Right()->Left() && !current->Right()->Right())
+				if (!strcmp(current->Right()->id_->c_str(), label) && !current->Right()->Left() && !current->Right()->Right())
 				{
 					// Remove node
 					// FIXME: delete node before setting to null
@@ -212,10 +207,10 @@ public:
 				auto* rightNode = current->Right();
 
 				// Copy all data from left node into current node
-				current->id_ = new char[strlen(current->Left()->id_) + 1];
-				strcpy(current->id_, current->Left()->id_);
+				current->id_ = current->Left()->id_;
 				current->right_ = current->Left()->Right();
 				current->data_ = current->Left()->data_;
+
 				current->left_ = current->Left()->Left();
 
 				// Append original right node
@@ -227,16 +222,15 @@ public:
 			if (current->Right())
 			{
 				// Copy all data from right node to this node
-				current->id_ = new char[strlen(current->Right()->id_) + 1];
-				strcpy(current->id_, current->Right()->id_);
-
+				current->id_ = current->Right()->id_;
 				current->left_ = current->Right()->Left();
 				current->data_ = current->Right()->data_;
+
 				current->right_ = current->Right()->Right();
 				break;
 			}
 
-			current->id_ = nullptr;
+			current->id_ = { };
 
 			break;
 		}
@@ -260,11 +254,10 @@ public:
 	{
 		delete left_;
 		delete right_;
-		delete[] id_;
 
 		left_ = nullptr;
 		right_ = nullptr;
-		id_ = nullptr;
+		id_ = { };
 	}
 
 	[[nodiscard]] DArray<T>* ConvertToDArray() const
