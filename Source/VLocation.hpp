@@ -1,6 +1,10 @@
 #pragma once
 
+#include "Computer.hpp"
 #include "UplinkObject.hpp"
+
+static constexpr size_t VIRTUAL_WIDTH = 594;
+static constexpr size_t VIRTUAL_HEIGHT = 315;
 
 class VLocation : public UplinkObject
 {
@@ -20,15 +24,13 @@ public:
 	void Update() override;
 	const char* GetID() override;
 	UplinkObjectId GetOBJECTID() override;
-
-	// TODO:
-	// GetComputer
-	// SetIP
-	// SetComputer
-	// SetListed
-	// SetDisplayed
-	// SetColorDisplayed
-	// SetPLocation
-	// VerifyIP
-	// VerifyPLocation
+	[[nodiscard]] Computer* GetComputer();
+	void SetIP(const char* ip);
+	void SetComputer(const char* computer);
+	void SetListed(bool listed);
+	void SetDisplayed(bool displayed);
+	void SetColorDisplayed(bool colorDisplayed);
+	void SetPLocation(int x, int y);
+	bool VerifyIP(const char* ip);
+	bool VerifyPLocation(int x, int y);
 };
