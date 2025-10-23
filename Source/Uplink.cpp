@@ -146,12 +146,12 @@ void RunUplink(const int argc, char* argv[])
 			return std::println("{}", UPLINK_VERSION);
 	}
 
-	const auto* edx_1 = "/opt/uk.co.introversion.uplink-full/data.dat";
+	const auto* path = "/opt/uk.co.introversion.uplink-full/data.dat";
 
-	if (!DoesFileExist("/opt/uk.co.introversion.uplink-full/data.dat"))
-		edx_1 = vmg57670648335164_br_find_exe(nullptr);
+	if (!DoesFileExist(path))
+		path = vmg57670648335164_br_find_exe(nullptr);
 
-	Init_App(edx_1);
+	Init_App(path);
 	Init_Options(argc, argv);
 
 	if (VerifyLegitAndCodeCardCheck() && Load_Data())

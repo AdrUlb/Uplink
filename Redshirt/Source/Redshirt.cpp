@@ -18,9 +18,9 @@ typedef bool (*ReadWriteFunc)(FILE* file);
 static constexpr size_t HASH_RESULT_SIZE = 20;
 
 static bool rsInitialized = false;
-std::string rsapppath = "";
-static char tempdir[0x100] { };
-static char tempfilename[0x100] { };
+std::string rsapppath;
+std::string tempdir;
+std::string tempfilename;
 
 static EVP_MD_CTX* HashInitial()
 {
@@ -343,16 +343,16 @@ void RsInitialise(const char* appPath)
 		rsapppath += '/';
 	}
 
-	strcpy(tempdir, "/tmp/uplink-XXXXXX");
+	tempdir = "/tmp/uplink-XXXXXX";
 
-	if (!mkdtemp(tempdir))
+	if (!mkdtemp(tempdir.data()))
 	{
 		std::println("Failed to make temporary directory");
 		abort();
 	}
 
 	rsInitialized = true;
-	tempdir[strlen(tempdir)] = '/';
+	tempdir += '/';
 	atexit(RsCleanUp);
 }
 
@@ -362,14 +362,14 @@ void RsCleanUp()
 		return;
 
 	rsInitialized = false;
-	auto* const dir = opendir(tempdir);
+	auto* const dir = opendir(tempdir.c_str());
 	if (dir)
 	{
 		for (auto* dirent = readdir(dir); dirent; dirent = readdir(dir))
 			remove(std::format("{}{}", tempdir, dirent->d_name).c_str());
 	}
 
-	RsDeleteDirectory(tempdir);
+	RsDeleteDirectory(tempdir.c_str());
 	BglCloseAllFiles();
 }
 
@@ -451,8 +451,8 @@ const char* RsArchiveFileOpen(const char* filename)
 
 	if (RsFileExists(path.c_str()))
 	{
-		strcpy(tempfilename, path.c_str());
-		return tempfilename;
+		tempfilename = path;
+		return tempfilename.c_str();
 	}
 
 	if (BglFileLoaded(path.c_str()))
@@ -466,8 +466,8 @@ const char* RsArchiveFileOpen(const char* filename)
 
 			if (BglExtractFile(path.c_str(), extractedPath.c_str()))
 			{
-				strcpy(tempfilename, extractedPath.c_str());
-				return tempfilename;
+				tempfilename = extractedPath;
+				return tempfilename.c_str();
 			}
 		}
 	}
