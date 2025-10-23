@@ -77,14 +77,20 @@ static char* vmg57670648335164_br_find_exe(uint32_t* outErrorCode)
 static void Init_App(char const* exePath)
 {
 	gApp = new App();
-	gApp->Set(GetFilePath(exePath).c_str(), "1.55", "RELEASE", std::format("{} at {}", "Aug 29 2011", "21:29:24").c_str(), "Uplink");
+	gApp->Set(GetFilePath(exePath).c_str(), "1.55", UPLINK_TYPE, std::format("{} at {}", __DATE__, __TIME__).c_str(), "Uplink");
 
 	std::println("=============================");
 	std::println("=                           =");
 	std::println("=        U P L I N K        =");
 	std::println("=                           =");
 	std::println("=        Version {:<10} =", gApp->GetVersion());
+#if defined(UPLINK_TYPE_RELEASE)
 	std::println("=     - R E L E A S E -     =");
+#elif defined(UPLINK_TYPE_DEBUG)
+	std::println("=       - D E B U G -       =");
+#else
+#error Chnage me!
+#endif
 	std::println("=                           =");
 	std::println("=============================");
 	std::println();
@@ -95,12 +101,14 @@ static void Init_App(char const* exePath)
 	MakeDirectory(gApp->GetUsersOldDir());
 
 	EmptyDirectory(gApp->GetUsersTempDir());
-	const auto debugLogFilePath = std::format("{}debug.log", gApp->GetUsersDir());
 
 	file_stdout = nullptr;
-	const auto fd = dup(fileno(stdout));
-	if (fd != -1)
-		file_stdout = fdopen(fd, "a");
+#ifdef UPLINK_TYPE_RELEASE
+	const auto debugLogFilePath = std::format("{}debug.log", gApp->GetUsersDir());
+
+	const auto stdoutDesc = dup(fileno(stdout));
+	if (stdoutDesc != -1)
+		file_stdout = fdopen(stdoutDesc, "a");
 
 	if (!freopen(debugLogFilePath.c_str(), "a", stdout))
 		std::println("WARNING : Failed to open {} for writing stdout", debugLogFilePath);
@@ -108,15 +116,16 @@ static void Init_App(char const* exePath)
 	if (!freopen(debugLogFilePath.c_str(), "a", stderr))
 		std::println("WARNING : Failed to open {} for writing stderr", debugLogFilePath);
 
+	setvbuf(stdout, nullptr, _IONBF, 0);
+	setvbuf(stderr, nullptr, _IONBF, 0);
+#endif
+
 	const auto currentTime = time(nullptr);
 	const auto* const localTime = localtime(&currentTime);
 	std::println("\n");
 	std::println("===============================================");
 	std::println("NEW GAME     {}:{}, {}/{}/{}", localTime->tm_hour, localTime->tm_min, localTime->tm_mday, localTime->tm_mon + 1, localTime->tm_year + 1900);
 	std::println("===============================================");
-	std::println("Version : {}", gApp->GetVersion());
-	std::println("RELEASE");
-	std::println("Linux Build");
 	std::println("{}", gApp->GetBuild());
 	std::println("Path : {}", gApp->GetPath());
 	RsInitialise(gApp->GetPath());

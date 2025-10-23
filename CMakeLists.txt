@@ -35,4 +35,11 @@ set(SOURCES
 		Source/Util.hpp)
 add_executable(Uplink ${SOURCES})
 target_compile_definitions(Uplink PRIVATE -DUPLINK_VERSION="${PROJECT_VERSION}")
+
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+	target_compile_definitions(Uplink PRIVATE -DUPLINK_TYPE_RELEASE -DUPLINK_TYPE="RELEASE")
+else ()
+	target_compile_definitions(Uplink PRIVATE -DUPLINK_TYPE_DEBUG -DUPLINK_TYPE="DEBUG" -DUPLINK_DEBUG)
+endif ()
+
 target_link_libraries(Uplink PRIVATE Tosser Redshirt Gucci)

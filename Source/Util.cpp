@@ -110,7 +110,7 @@ void SaveDynamicString(const char* str, size_t max, FILE* file)
 	if (size > max)
 	{
 		size = max;
-		std::println("WARNING: SaveDynamicString, size appears to be too long, size={}, maxsize={}, absolute maxsize={}", buf, max, 0x4000);
+		std::println("WARNING: SaveDynamicString, size appears to be too long, size={}, maxsize={}, absolute maxsize={}", size, max, 0x4000);
 	}
 
 	fwrite(&size, sizeof(size), 1, file);
@@ -396,12 +396,12 @@ void EmptyDirectory(const char* path)
 
 std::string GetFilePath(const std::string_view path)
 {
-	const auto slashIndex = path.find('/');
-	if (slashIndex)
+	const auto slashIndex = path.rfind('/');
+	if (slashIndex != std::string::npos)
 		return std::string(path.substr(0, slashIndex + 1));
 
-	const auto backslashIndex = path.find('\\');
-	if (backslashIndex)
+	const auto backslashIndex = path.rfind('\\');
+	if (backslashIndex != std::string::npos)
 		return std::string(path.substr(0, backslashIndex + 1));
 
 	return "./";

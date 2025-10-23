@@ -9,15 +9,15 @@
 
 class App : public UplinkObject
 {
-	char path_[0x100] = "c:/";
-	char usersDir_[0x100] = "c:/";
-	char usersTempDir_[0x100] = "c:/";
-	char usersOldDir_[0x100] = "c:/";
-	char version_[0x20] = "1.31c";
-	char type_[0x20] = "RELEASE";
-	char date_[0x20] = "01/01/97";
-	char title_[0x40] = "NewApp";
-	char build_[0x100] = "Version 1.0 (RELEASE), Compiled on 01/01/97";
+	std::string path_ = "c:/";
+	std::string usersDir_ = "c:/";
+	std::string usersTempDir_ = "c:/";
+	std::string usersOldDir_ = "c:/";
+	std::string version_ = "1.31c";
+	std::string type_ = "RELEASE";
+	std::string date_ = "01/01/97";
+	std::string title_ = "NewApp";
+	std::string build_ = "Version 1.0 (RELEASE), Compiled on 01/01/97";
 	int32_t initTime_ = 0;
 	bool closed_ = false;
 	Options* options_ = nullptr;
@@ -31,15 +31,15 @@ public:
 	[[nodiscard]] static DArray<char*>* ListExistingGames();
 	static void CoreDump();
 
-	[[nodiscard]] const char* GetPath() const { return path_; }
-	[[nodiscard]] const char* GetUsersDir() const { return usersDir_; }
-	[[nodiscard]] const char* GetUsersTempDir() const { return usersTempDir_; }
-	[[nodiscard]] const char* GetUsersOldDir() const { return usersOldDir_; }
-	[[nodiscard]] const char* GetVersion() const { return version_; }
-	[[nodiscard]] const char* GetType() const { return type_; }
-	[[nodiscard]] const char* GetDate() const { return date_; }
-	[[nodiscard]] const char* GetTitle() const { return title_; }
-	[[nodiscard]] const char* GetBuild() const { return build_; }
+	[[nodiscard]] const char* GetPath() const { return path_.c_str(); }
+	[[nodiscard]] const char* GetUsersDir() const { return usersDir_.c_str(); }
+	[[nodiscard]] const char* GetUsersTempDir() const { return usersTempDir_.c_str(); }
+	[[nodiscard]] const char* GetUsersOldDir() const { return usersOldDir_.c_str(); }
+	[[nodiscard]] const char* GetVersion() const { return version_.c_str(); }
+	[[nodiscard]] const char* GetType() const { return type_.c_str(); }
+	[[nodiscard]] const char* GetDate() const { return date_.c_str(); }
+	[[nodiscard]] const char* GetTitle() const { return title_.c_str(); }
+	[[nodiscard]] const char* GetBuild() const { return build_.c_str(); }
 	[[nodiscard]] int32_t GetInitTime() const { return initTime_; }
 	[[nodiscard]] bool IsCodeCardEnabled() const { return enableCodeCard_; }
 	void SetCodeCardEnabled(const bool enabled) { enableCodeCard_ = enabled; }
