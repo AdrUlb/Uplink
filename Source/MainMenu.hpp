@@ -5,5 +5,5 @@
 class MainMenu
 {
 public:
-	MainMenu() { TODO_ABORT; }
+	MainMenu() { TODO_PRINT; }
 };

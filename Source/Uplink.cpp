@@ -111,18 +111,69 @@ static void Init_App(char const* exePath)
 	gApp->Initialise();
 }
 
-void Init_Options(const int argc, char* argv[]) { TODO_ABORT; }
-bool VerifyLegitAndCodeCardCheck() { TODO_ABORT; }
-bool Load_Data() { TODO_ABORT; }
-bool Init_Game() { TODO_ABORT; }
-bool Init_Graphics() { TODO_ABORT; }
-bool Init_OpenGL(const int argc, char* argv[]) { TODO_ABORT; }
-bool Init_Fonts() { TODO_ABORT; }
-bool Init_Sound() { TODO_ABORT; }
-bool Init_Music() { TODO_ABORT; }
-bool Run_MainMenu() { TODO_ABORT; }
-bool Run_Game() { TODO_ABORT; }
-void Cleanup_Uplink() { TODO_ABORT; }
+void Init_Options(const int argc, char* argv[]) { TODO_PRINT; }
+
+bool VerifyLegitAndCodeCardCheck()
+{
+	TODO_PRINT;
+	return true;
+}
+
+bool Load_Data()
+{
+	TODO_PRINT;
+	return true;
+}
+
+bool Init_Game()
+{
+	TODO_PRINT;
+	return true;
+}
+
+bool Init_Graphics()
+{
+	TODO_PRINT;
+	return true;
+}
+
+bool Init_OpenGL(const int argc, char* argv[])
+{
+	TODO_PRINT;
+	return true;
+}
+
+bool Init_Fonts()
+{
+	TODO_PRINT;
+	return true;
+}
+
+bool Init_Sound()
+{
+	TODO_PRINT;
+	return true;
+}
+
+bool Init_Music()
+{
+	TODO_PRINT;
+	return true;
+}
+
+bool Run_MainMenu()
+{
+	TODO_PRINT;
+	return true;
+}
+
+bool Run_Game()
+{
+	TODO_PRINT;
+	return true;
+}
+
+void Cleanup_Uplink() { TODO_PRINT; }
 
 void RunUplink(const int argc, char* argv[])
 {
