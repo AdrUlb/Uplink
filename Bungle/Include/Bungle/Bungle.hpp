@@ -18,10 +18,9 @@ struct LocalFileHeader
 	uint32_t uncompressedSize = 0;
 	uint16_t filenameLen = 0;
 	uint16_t extraFieldLen = 0;
-	char* filename = nullptr;
-	char* extraField = nullptr;
+	std::string filename;
+	std::optional<std::string> id = { };
 	char* data = nullptr;
-	char* id = nullptr;
 };
 
 bool BglOpenZipFile(FILE* archiveFile, const char* apppath, const char* id);

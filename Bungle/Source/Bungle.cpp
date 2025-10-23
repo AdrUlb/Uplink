@@ -75,21 +75,16 @@ bool BglOpenZipFile(FILE* archiveFile, const char* apppath, const char* id)
 
 		if (fileHeader->filenameLen > 0)
 		{
-			fileHeader->filename = new char[fileHeader->filenameLen + 1];
-			fread(fileHeader->filename, fileHeader->filenameLen, 1, archiveFile);
-			fileHeader->filename[fileHeader->filenameLen] = 0;
+			fileHeader->filename.resize(fileHeader->filenameLen);
+			fread(fileHeader->filename.data(), fileHeader->filenameLen, 1, archiveFile);
 		}
-		else
-			fileHeader->filename = nullptr;
 
+		std::string extraField;
 		if (fileHeader->extraFieldLen > 0)
 		{
-			fileHeader->extraField = new char[fileHeader->extraFieldLen + 1];
-			fread(fileHeader->extraField, fileHeader->extraFieldLen, 1, archiveFile);
-			fileHeader->extraField[fileHeader->extraFieldLen] = 0;
+			extraField.resize(fileHeader->extraFieldLen);
+			fread(extraField.data(), fileHeader->extraFieldLen, 1, archiveFile);
 		}
-		else
-			fileHeader->extraField = nullptr;
 
 		if (fileHeader->uncompressedSize > 0)
 		{
@@ -97,25 +92,16 @@ bool BglOpenZipFile(FILE* archiveFile, const char* apppath, const char* id)
 			fread(fileHeader->data, fileHeader->uncompressedSize, 1, archiveFile);
 			fileHeader->data[fileHeader->uncompressedSize] = 0;
 		}
-		else
-			fileHeader->data = nullptr;
 
-		if (!fileHeader->data || !fileHeader->filename)
+		if (!fileHeader->data || fileHeader->filename.empty())
 		{
-			delete[] fileHeader->filename;
-			delete[] fileHeader->extraField;
 			delete[] fileHeader->data;
 			delete fileHeader;
 			continue;
 		}
 
 		if (id)
-		{
-			fileHeader->id = new char[strlen(id) + 1];
-			strcpy(fileHeader->id, id);
-		}
-		else
-			fileHeader->id = nullptr;
+			fileHeader->id = id;
 
 		auto filename = std::format("{}{}", apppath, fileHeader->filename);
 		BglSlashify(filename);
@@ -154,9 +140,9 @@ static void BglCloseZipFile_Recursive(BTree<LocalFileHeader*>* files, LList<cons
 
 		if (fileHeader)
 		{
-			const auto* fileId = fileHeader->id;
+			const auto fileId = fileHeader->id;
 
-			if (fileId && !strcmp(fileId, id))
+			if (fileId && *fileId == id)
 				removableIds->PutData(i->Id());
 		}
 
@@ -183,11 +169,7 @@ void BglCloseZipFile(const char* id)
 
 		files.RemoveData(filename);
 
-		delete[] fileHeader->filename;
-		delete[] fileHeader->extraField;
 		delete[] fileHeader->data;
-		delete[] fileHeader->id;
-
 		delete fileHeader;
 	}
 }
@@ -227,48 +209,34 @@ void BglExtractAllFiles(const char* archivePath)
 		bool isDirectory = false;
 		if (fileHeader.filenameLen > 0)
 		{
-			fileHeader.filename = new char[fileHeader.filenameLen + 1];
-			fread(fileHeader.filename, fileHeader.filenameLen, 1, archiveFile);
-			fileHeader.filename[fileHeader.filenameLen] = 0;
+			fileHeader.filename.resize(fileHeader.filenameLen);
+			fread(fileHeader.filename.data(), fileHeader.filenameLen, 1, archiveFile);
 			isDirectory = fileHeader.filename[fileHeader.filenameLen - 1] == '/';
 		}
-		else
-			fileHeader.filename = nullptr;
 
+		std::string extraField;
 		if (fileHeader.extraFieldLen > 0)
 		{
-			fileHeader.extraField = new char[fileHeader.extraFieldLen + 1];
-			fread(fileHeader.extraField, fileHeader.extraFieldLen, 1, archiveFile);
-			fileHeader.extraField[fileHeader.extraFieldLen] = 0;
+			extraField.resize(fileHeader.extraFieldLen);
+			fread(fileHeader.filename.data(), fileHeader.extraFieldLen, 1, archiveFile);
 		}
-		else
-			fileHeader.extraField = nullptr;
 
 		if (isDirectory)
 		{
-			BglMakeDirectory(fileHeader.filename);
+			BglMakeDirectory(fileHeader.filename.c_str());
 		}
-		else if (fileHeader.uncompressedSize > 0)
+		else if (fileHeader.uncompressedSize > 0 && !fileHeader.filename.empty())
 		{
 			fileHeader.data = new char[fileHeader.uncompressedSize + 1];
 			fread(fileHeader.data, fileHeader.uncompressedSize, 1, archiveFile);
 			fileHeader.data[fileHeader.uncompressedSize] = 0;
-		}
-		else
-		{
-			fileHeader.data = nullptr;
-		}
 
-		if (fileHeader.filename && fileHeader.data)
-		{
-			FILE* file = fopen(fileHeader.filename, "wb");
+			FILE* file = fopen(fileHeader.filename.c_str(), "wb");
 			assert(file);
 			fwrite(fileHeader.data, fileHeader.uncompressedSize, 1, file);
 			fclose(file);
 		}
 
-		delete[] fileHeader.filename;
-		delete[] fileHeader.extraField;
 		delete[] fileHeader.data;
 	}
 
@@ -329,10 +297,7 @@ void BglCloseAllFiles(BTree<LocalFileHeader*>* files)
 
 	if (fileHeader)
 	{
-		delete[] fileHeader->filename;
-		delete[] fileHeader->extraField;
 		delete[] fileHeader->data;
-		delete[] fileHeader->id;
 		delete fileHeader;
 	}
 
