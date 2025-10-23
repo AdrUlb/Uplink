@@ -156,7 +156,7 @@ static bool filterFile(const char* path, const char* destPath,
 		goto fail;
 	}
 
-	if (writeChecksumFunc(destFile))
+	if (!writeChecksumFunc(destFile))
 	{
 		std::println("redshirt: failed to write checksum!");
 		goto fail;

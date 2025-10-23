@@ -18,7 +18,7 @@ class App : public UplinkObject
 	std::string date_ = "01/01/97";
 	std::string title_ = "NewApp";
 	std::string build_ = "Version 1.0 (RELEASE), Compiled on 01/01/97";
-	int32_t initTime_ = 0;
+	int initTime_ = 0;
 	bool closed_ = false;
 	Options* options_ = nullptr;
 	Network* network_ = nullptr;

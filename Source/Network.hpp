@@ -1,4 +1,8 @@
 #pragma once
 
 // TODO
-class Network {};
+class Network
+{
+public:
+	Network() { TODO_ABORT; }
+};

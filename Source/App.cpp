@@ -1,5 +1,7 @@
 #include "App.hpp"
 
+#include "Eclipse/Eclipse.hpp"
+
 #include "_.hpp"
 
 DArray<char*>* App::ListExistingGames()
@@ -31,7 +33,16 @@ const char* App::GetID() { TODO_ABORT; }
 MainMenu& App::GetMainMenu() { TODO_ABORT; }
 Network& App::GetNetwork() { TODO_ABORT; }
 Options& App::GetOptions() { TODO_ABORT; }
-void App::Initialise() { TODO_ABORT; }
+
+void App::Initialise()
+{
+	options_ = new Options();
+	options_->Load(nullptr);
+	options_->CreateDefaultOptions();
+	initTime_ = static_cast<int>(EclGetAccurateTime());
+	network_ = new Network();
+	mainMenu_ = new MainMenu();
+}
 
 void App::Set(const char* path, const char* version, const char* type, const char* date, const char* title)
 {

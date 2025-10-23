@@ -1,4 +1,9 @@
 #pragma once
+#include "_.hpp"
 
 // TODO
-class MainMenu {};
+class MainMenu
+{
+public:
+	MainMenu() { TODO_ABORT; }
+};

@@ -12,6 +12,7 @@ include_directories(${CMAKE_CURRENT_LIST_DIR})
 add_subdirectory(Tosser)
 add_subdirectory(Bungle)
 add_subdirectory(Redshirt)
+add_subdirectory(Eclipse)
 add_subdirectory(Gucci)
 
 set(SOURCES
@@ -32,7 +33,11 @@ set(SOURCES
 		Source/UplinkObject.cpp
 		Source/UplinkObject.hpp
 		Source/Util.cpp
-		Source/Util.hpp)
+		Source/Util.hpp
+		Source/VLocation.hpp
+		Source/VLocation.cpp
+		Source/Date.hpp
+		Source/Date.cpp)
 add_executable(Uplink ${SOURCES})
 target_compile_definitions(Uplink PRIVATE -DUPLINK_VERSION="${PROJECT_VERSION}")
 
@@ -42,4 +47,4 @@ else ()
 	target_compile_definitions(Uplink PRIVATE -DUPLINK_TYPE_DEBUG -DUPLINK_TYPE="DEBUG" -DUPLINK_DEBUG)
 endif ()
 
-target_link_libraries(Uplink PRIVATE Tosser Redshirt Gucci)
+target_link_libraries(Uplink PRIVATE Tosser Redshirt Eclipse Gucci)
