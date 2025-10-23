@@ -6,8 +6,6 @@
 
 #include "_.hpp"
 
-static FILE* file_stdout = nullptr;
-
 [[noreturn]] static void RunUplinkExceptionHandling()
 {
 	if (gApp &&

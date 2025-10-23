@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstring>
+#include <dirent.h>
 #include <print>
 #include <source_location>
 #include <unistd.h>
@@ -15,15 +16,18 @@ bool LoadDynamicStringInt(std::source_location loc, char* buffer, size_t max, FI
 void SaveDynamicString(const char* str, FILE* file);
 void SaveDynamicString(const char* str, size_t max, FILE* file);
 
-bool LoadBTree(BTree<UplinkObject*> & btree, FILE * file);
+bool LoadBTree(BTree<UplinkObject*>& btree, FILE* file);
 void SaveBTree(const BTree<UplinkObject*>& btree, FILE* file);
 void PrintBTree(const BTree<UplinkObject*>& btree);
 void DeleteBTreeData(const BTree<UplinkObject*>& btree);
 
-bool LoadBTree(BTree<char*> & btree, FILE * file);
+bool LoadBTree(BTree<char*>& btree, FILE* file);
 void SaveBTree(const BTree<char*>& btree, FILE* file);
 void PrintBTree(const BTree<char*>& btree);
 void DeleteBTreeData(const BTree<char*>& btree);
+
+void EmptyDirectory(const char* path);
+std::string GetFilePath(const std::string_view path);
 
 // ReSharper disable CppRedundantInlineSpecifier
 template<typename T> requires (std::is_base_of_v<UplinkObject, T> && !std::is_same_v<UplinkObject, T>)

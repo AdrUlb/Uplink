@@ -376,3 +376,33 @@ void DeleteBTreeData(const BTree<char*>& btree)
 
 	delete darray;
 }
+
+void EmptyDirectory(const char* path)
+{
+	auto* dir = opendir(path);
+	if (!dir)
+		return;
+
+	for (const auto* i = readdir(dir); i; i = readdir(dir))
+	{
+		if (strcmp(i->d_name, ".") == 0 || strcmp(i->d_name, "..") == 0)
+			continue;
+
+		unlink(std::format("{}{}", path, i->d_name).c_str());
+	}
+
+	closedir(dir);
+}
+
+std::string GetFilePath(const std::string_view path)
+{
+	const auto slashIndex = path.find('/');
+	if (slashIndex)
+		return std::string(path.substr(0, slashIndex + 1));
+
+	const auto backslashIndex = path.find('\\');
+	if (backslashIndex)
+		return std::string(path.substr(0, backslashIndex + 1));
+
+	return "./";
+}
