@@ -7,11 +7,20 @@
 
 static BTree<LocalFileHeader*> files;
 
+/**
+ * Create a directory.
+ * @param path Where to create the directory at.
+ * @return True if the directory was created, false otherwise.
+ */
 static bool BglMakeDirectory(const char* path)
 {
 	return mkdir(path, 0700) == 0;
 }
 
+/**
+ * Normalize slashes and replace all uppercase letters with lowercase in a path.
+ * @param path The path to modify.
+ */
 static void BglSlashify(std::string& path)
 {
 	for (auto* str = strchr(path.data(), '\\'); str; str = strchr(str, '\\'))
@@ -24,6 +33,13 @@ static void BglSlashify(std::string& path)
 	}
 }
 
+/**
+ * Load a ZIP archive, preparing its files for extraction.
+ * @param archiveFile The FILE to read from.
+ * @param apppath The apppath.
+ * @param id The archive ID.
+ * @return True if the archive was loaded successfully, false otherwise.
+ */
 bool BglOpenZipFile(FILE* archiveFile, const char* apppath, const char* id)
 {
 	if (!archiveFile)
@@ -109,6 +125,13 @@ bool BglOpenZipFile(FILE* archiveFile, const char* apppath, const char* id)
 	return true;
 }
 
+/**
+ * Load a ZIP archive, preparing its files for extraction.
+ * @param archivePath The path of the file to read from.
+ * @param apppath The apppath.
+ * @param id The archive ID.
+ * @return True if the archive was loaded successfully, false otherwise.
+ */
 bool BglOpenZipFile(const char* archivePath, const char* apppath, const char* id)
 {
 	auto* file = fopen(archivePath, "rb");
@@ -127,11 +150,11 @@ static void BglCloseZipFile_Recursive(BTree<LocalFileHeader*>* files, LList<cons
 
 	for (const auto* i = files; i; i = i->Right())
 	{
-		const auto* data_ = i->GetData();
+		const auto* fileHeader = i->GetData();
 
-		if (data_)
+		if (fileHeader)
 		{
-			const auto* fileId = data_->id;
+			const auto* fileId = fileHeader->id;
 
 			if (fileId && !strcmp(fileId, id))
 				removableIds->PutData(i->Id());
@@ -141,6 +164,10 @@ static void BglCloseZipFile_Recursive(BTree<LocalFileHeader*>* files, LList<cons
 	}
 }
 
+/**
+ * Unprepare all files from a ZIP archive.
+ * @param id The archive ID.
+ */
 void BglCloseZipFile(const char* id)
 {
 	LList<const char*> removableIds;
@@ -165,6 +192,10 @@ void BglCloseZipFile(const char* id)
 	}
 }
 
+/**
+ * Extract all files from a ZIP archive.
+ * @param archivePath The path of the file to read from.
+ */
 void BglExtractAllFiles(const char* archivePath)
 {
 	FILE* archiveFile = fopen(archivePath, "rb");
@@ -175,6 +206,10 @@ void BglExtractAllFiles(const char* archivePath)
 	{
 		LocalFileHeader fileHeader;
 		fread(&fileHeader.signature, sizeof(fileHeader.signature), 1, archiveFile);
+
+		if (((fileHeader.signature >> 0) & 0xFF) != 'P' || ((fileHeader.signature >> 8) & 0xFF) != 'K')
+			break;
+
 		fread(&fileHeader.version, sizeof(fileHeader.version), 1, archiveFile);
 		fread(&fileHeader.flags, sizeof(fileHeader.flags), 1, archiveFile);
 		fread(&fileHeader.compression, sizeof(fileHeader.compression), 1, archiveFile);
@@ -240,6 +275,11 @@ void BglExtractAllFiles(const char* archivePath)
 	fclose(archiveFile);
 }
 
+/**
+ * Determine whether a file is loaded and ready for extraction.
+ * @param name The name of the file.
+ * @return True if the file is ready for extraction, false otherwise.
+ */
 bool BglFileLoaded(const char* name)
 {
 	auto slashifiedName = std::string(name);
@@ -249,6 +289,12 @@ bool BglFileLoaded(const char* name)
 	return header;
 }
 
+/**
+ * Extract a file.
+ * @param name The name of the file.
+ * @param extractPath The extraction destination.
+ * @return Whether the operation completed successfully.
+ */
 bool BglExtractFile(const char* name, const char* extractPath)
 {
 	auto slashifiedName = std::string(name);
@@ -268,6 +314,10 @@ bool BglExtractFile(const char* name, const char* extractPath)
 	return true;
 }
 
+/**
+ * Close all given files, unpreparing them for extraction.
+ * @param files The list of files to close.
+ */
 void BglCloseAllFiles(BTree<LocalFileHeader*>* files)
 {
 	if (!files)
@@ -294,6 +344,13 @@ void BglCloseAllFiles()
 	BglCloseAllFiles(&files);
 }
 
+/**
+ * List all files matching the given query parameters.
+ * @param apppath The apppath.
+ * @param dir The archive directory to search in.
+ * @param query The string to search for.
+ * @return List of files which matched the pattern.
+ */
 DArray<const char*>* BglListFiles(char const* apppath, char const* dir, char const* query)
 {
 	auto queryDir = std::format("{}{}", apppath, dir);
@@ -301,16 +358,16 @@ DArray<const char*>* BglListFiles(char const* apppath, char const* dir, char con
 
 	auto* filenames = files.ConvertIndexToDArray();
 
-	for (size_t index = 0; index < filenames->Size(); index++)
+	for (size_t i = 0; i < filenames->Size(); i++)
 	{
-		if (!filenames->ValidIndex(index))
+		if (!filenames->ValidIndex(i))
 			continue;
 
-		const auto* filename = filenames->GetData(index);
+		const auto* filename = filenames->GetData(i);
 		auto fileDir = std::string(filename).substr(0, queryDir.size());
 
 		if (strcmp(fileDir.c_str(), queryDir.c_str()) != 0 || !strstr(filename, query))
-			filenames->RemoveData(index);
+			filenames->RemoveData(i);
 	}
 
 	return filenames;

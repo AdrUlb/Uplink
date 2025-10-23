@@ -214,9 +214,9 @@ public:
 				// Copy all data from left node into current node
 				current->id_ = new char[strlen(current->Left()->id_) + 1];
 				strcpy(current->id_, current->Left()->id_);
-				current->left_ = current->Left()->Left();
 				current->right_ = current->Left()->Right();
 				current->data_ = current->Left()->data_;
+				current->left_ = current->Left()->Left();
 
 				// Append original right node
 				current->AppendRight(rightNode);
@@ -231,8 +231,8 @@ public:
 				strcpy(current->id_, current->Right()->id_);
 
 				current->left_ = current->Right()->Left();
-				current->right_ = current->Right()->Right();
 				current->data_ = current->Right()->data_;
+				current->right_ = current->Right()->Right();
 				break;
 			}
 
