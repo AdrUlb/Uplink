@@ -1,11 +1,18 @@
 #include "Uplink.hpp"
 
+#include <cstdlib>
+
 #include "Util.hpp"
-#include "_.hpp"
 #include "Redshirt/Redshirt.hpp"
+
+#include "_.hpp"
 
 FILE* file_stdout = nullptr;
 App* gApp = nullptr;
+
+static float windowScaleY = 1;
+static float windowScaleX = 1;
+static int tooltipanimindex = -1;
 
 std::optional<std::string> FindExe()
 {
@@ -51,6 +58,12 @@ std::optional<std::string> FindExe()
 	fclose(mapsFile);
 
 	return { };
+}
+
+void SetWindowScaleFactor(const float x, const float y)
+{
+	windowScaleX = x;
+	windowScaleY = y;
 }
 
 static void Init_App(char const* exePath)
@@ -111,7 +124,54 @@ static void Init_App(char const* exePath)
 	gApp->Initialise();
 }
 
-void Init_Options(const int argc, char* argv[]) { TODO_PRINT; }
+void Init_Options(const int argc, char* argv[])
+{
+	for (auto i = 1; i < argc; i++)
+	{
+		const auto* arg = argv[i];
+
+		switch (arg[0])
+		{
+			case '+':
+				gApp->GetOptions().SetOptionValue(arg + 1, 1);
+				break;
+			case '-':
+				gApp->GetOptions().SetOptionValue(arg + 1, 0);
+				break;
+			case '!':
+				if (i + 1 >= argc)
+				{
+					std::println("Error parsing command line option : {}", argv[i]);
+					break;
+				}
+
+				i++;
+
+				gApp->GetOptions().SetOptionValue(arg + 1, static_cast<int>(strtol(argv[i], nullptr, 10)));
+				break;
+			default:
+				// NOTE: changed case from '\0' to default since the original code would only print an error for an empty argument
+				std::println("Error parsing command line option : {}", arg);
+				break;
+		}
+	}
+
+	if (gApp->GetOptions().GetOptionValue("graphics_safemode") == 1)
+	{
+		gApp->GetOptions().SetOptionValue("graphics_fullscreen", 0);
+		gApp->GetOptions().SetOptionValue("graphics_screenrefresh", -1);
+		gApp->GetOptions().SetOptionValue("graphics_screendepth", -1);
+		gApp->GetOptions().SetOptionValue("graphics_softwaremouse", 1);
+	}
+
+	putchar('\n');
+	const auto width = gApp->GetOptions().GetOptionValue("graphics_screenwidth");
+	const auto height = gApp->GetOptions().GetOptionValue("graphics_screenheight");
+	SetWindowScaleFactor(static_cast<float>(width) / 640.0f, static_cast<float>(height) / 480.0f);
+
+	if (gApp->GetOptions().IsOptionEqualTo("game_debugstart", 1))
+		puts("=====DEBUGGING INFORMATION ENABLED=====");
+}
 
 bool VerifyLegitAndCodeCardCheck()
 {

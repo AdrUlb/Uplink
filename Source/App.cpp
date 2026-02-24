@@ -1,12 +1,41 @@
 #include "App.hpp"
 
+#include <dirent.h>
+
+#include "Uplink.hpp"
+#include "Util.hpp"
 #include "Eclipse/Eclipse.hpp"
 
 #include "_.hpp"
 
 DArray<char*>* App::ListExistingGames()
 {
-	TODO_ABORT;
+	auto* result = new DArray<char*>();
+
+	char name[0x100];
+	UplinkStrncpy(name, gApp->_usersDir.c_str(), 0x100);
+
+	auto* dir = opendir(name);
+	if (!dir)
+		return result;
+
+	for (auto* entry = readdir(dir); entry; entry = readdir(dir))
+	{
+		auto* extOffset = strstr(entry->d_name, ".usr");
+
+		if (!extOffset)
+			continue;
+
+		extOffset[0] = 0;
+
+		auto* buffer = new char[0x100];
+		UplinkStrncpy(buffer, entry->d_name, 0x100);
+		result->PutData(buffer);
+	}
+
+	closedir(dir);
+
+	return result;
 }
 
 void App::CoreDump()
@@ -30,9 +59,9 @@ void App::Update() { TODO_ABORT; }
 
 const char* App::GetID() { TODO_ABORT; }
 
-MainMenu& App::GetMainMenu() { TODO_ABORT; }
-Network& App::GetNetwork() { TODO_ABORT; }
-Options& App::GetOptions() { TODO_ABORT; }
+MainMenu& App::GetMainMenu() { return *_mainMenu; }
+Network& App::GetNetwork() { return *_network; }
+Options& App::GetOptions() { return *_options; }
 
 void App::Initialise()
 {
