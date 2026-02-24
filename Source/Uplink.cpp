@@ -14,7 +14,7 @@ static float windowScaleY = 1;
 static float windowScaleX = 1;
 static int tooltipanimindex = -1;
 
-std::optional<std::string> FindExe()
+static std::optional<std::string> FindExe()
 {
 	std::string procExe;
 	procExe.resize(0xFFF);
@@ -60,10 +60,29 @@ std::optional<std::string> FindExe()
 	return { };
 }
 
-void SetWindowScaleFactor(const float x, const float y)
+static void SetWindowScaleFactor(const float x, const float y)
 {
 	windowScaleX = x;
 	windowScaleY = y;
+}
+
+static bool TestRsLoadArchive(const char* id)
+{
+	if (RsLoadArchive(id))
+		return true;
+
+	std::println("\nAn error occured in Uplink");
+	std::println("Files integrity is not verified");
+	std::println("Failed loading '{}'", id);
+
+	if (file_stdout)
+	{
+		std::println(file_stdout, "\nAn Uplink Error has occured");
+		std::println(file_stdout, "Files integrity is not verified");
+		std::println(file_stdout, "Failed loading '{}'", id);
+	}
+
+	return false;
 }
 
 static void Init_App(char const* exePath)
@@ -181,8 +200,28 @@ bool VerifyLegitAndCodeCardCheck()
 
 bool Load_Data()
 {
-	TODO_PRINT;
-	return true;
+	const auto debug = gApp->GetOptions().IsOptionEqualTo("game_debugstart", 1);
+
+	if (debug)
+		puts("Loading application data");
+
+	if (TestRsLoadArchive("data.dat") &&
+	    TestRsLoadArchive("graphics.dat") &&
+	    TestRsLoadArchive("loading.dat") &&
+	    TestRsLoadArchive("sounds.dat") &&
+	    TestRsLoadArchive("music.dat") &&
+	    TestRsLoadArchive("fonts.dat") &&
+	    TestRsLoadArchive("patch.dat") &&
+	    TestRsLoadArchive("patch2.dat") &&
+	    TestRsLoadArchive("patch3.dat"))
+	{
+		if (debug)
+			puts("Finished loading application data");
+
+		return true;
+	}
+
+	return false;
 }
 
 bool Init_Game()
