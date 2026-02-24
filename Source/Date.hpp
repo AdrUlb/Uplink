@@ -3,14 +3,14 @@
 
 class Date : public UplinkObject
 {
-	int second_ = 1;
-	int minute_ = 1;
-	int hour_ = 1;
-	int day_ = 1;
-	int month_ = 1;
-	int year_ = 1000;
-	int lastTime_ = 0;
-	bool active_ = false;
+	int _second = 1;
+	int _minute = 1;
+	int _hour = 1;
+	int _day = 1;
+	int _month = 1;
+	int _year = 1000;
+	int _lastTime = 0;
+	bool _active = false;
 
 public:
 	~Date() override {} // NOLINT(*-use-equals-default)
@@ -20,12 +20,12 @@ public:
 	void Update() override;
 	const char* GetID() override;
 
-	[[nodiscard]] int GetSecond() const { return second_; }
-	[[nodiscard]] int GetMinute() const { return minute_; }
-	[[nodiscard]] int GetHour() const { return hour_; }
-	[[nodiscard]] int GetDay() const { return day_; }
-	[[nodiscard]] int GetMonth() const { return month_; }
-	[[nodiscard]] int GetYear() const { return year_; }
+	[[nodiscard]] int GetSecond() const { return _second; }
+	[[nodiscard]] int GetMinute() const { return _minute; }
+	[[nodiscard]] int GetHour() const { return _hour; }
+	[[nodiscard]] int GetDay() const { return _day; }
+	[[nodiscard]] int GetMonth() const { return _month; }
+	[[nodiscard]] int GetYear() const { return _year; }
 
 	[[nodiscard]] const char* GetMonthName(int month);
 	[[nodiscard]] const char* GetShortString();

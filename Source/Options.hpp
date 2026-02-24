@@ -9,13 +9,13 @@
 
 class Options : public UplinkObject
 {
-	BTree<Option*> options_;
-	LList<OptionChange*> shutdownChanges_;
-	char themeName_[0x80] = "graphics";
-	char themeAuthor_[0x80] = "";
-	char themeTitle_[0x80] = "";
-	char themeDescription_[0x400] = "";
-	BTree<ColourOption*> colours_;
+	BTree<Option*> _options;
+	LList<OptionChange*> _shutdownChanges;
+	char _themeName[0x80] = "graphics";
+	char _themeAuthor[0x80] = "";
+	char _themeTitle[0x80] = "";
+	char _themeDescription[0x400] = "";
+	BTree<ColourOption*> _colours;
 
 public:
 	~Options() override;

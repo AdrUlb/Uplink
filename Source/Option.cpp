@@ -8,33 +8,33 @@
 bool Option::Load(FILE* file)
 {
 	// Sanity checks
-	static_assert(sizeof(name_) == 0x40);
-	static_assert(sizeof(tooltip_) == 0x80);
-	static_assert(sizeof(yesOrNo_) == 1);
-	static_assert(sizeof(visible_) == 1);
-	static_assert(sizeof(value_) == 4);
+	static_assert(sizeof(_name) == 0x40);
+	static_assert(sizeof(_tooltip) == 0x80);
+	static_assert(sizeof(_yesOrNo) == 1);
+	static_assert(sizeof(_visible) == 1);
+	static_assert(sizeof(_value) == 4);
 
-	if (!FileReadData(name_, sizeof(name_), 1, file))
+	if (!FileReadData(_name, sizeof(_name), 1, file))
 	{
-		strcpy(name_, "");
+		strcpy(_name, "");
 		return false;
 	}
-	name_[sizeof(name_) - 1] = 0;
+	_name[sizeof(_name) - 1] = 0;
 
-	if (!FileReadData(tooltip_, sizeof(tooltip_), 1, file))
+	if (!FileReadData(_tooltip, sizeof(_tooltip), 1, file))
 	{
-		strcpy(tooltip_, "");
+		strcpy(_tooltip, "");
 		return false;
 	}
-	tooltip_[sizeof(tooltip_) - 1] = 0;
+	_tooltip[sizeof(_tooltip) - 1] = 0;
 
-	if (!FileReadData(&yesOrNo_, sizeof(yesOrNo_), 1, file))
+	if (!FileReadData(&_yesOrNo, sizeof(_yesOrNo), 1, file))
 		return false;
 
-	if (!FileReadData(&visible_, sizeof(visible_), 1, file))
+	if (!FileReadData(&_visible, sizeof(_visible), 1, file))
 		return false;
 
-	if (!FileReadData(&value_, sizeof(value_), 1, file))
+	if (!FileReadData(&_value, sizeof(_value), 1, file))
 		return false;
 
 	return true;
@@ -42,18 +42,18 @@ bool Option::Load(FILE* file)
 
 void Option::Save(FILE* file)
 {
-	fwrite(name_, sizeof(name_), 1, file);
-	fwrite(tooltip_, sizeof(tooltip_), 1, file);
-	fwrite(&yesOrNo_, sizeof(yesOrNo_), 1, file);
-	fwrite(&visible_, sizeof(visible_), 1, file);
-	fwrite(&value_, sizeof(value_), 1, file);
+	fwrite(_name, sizeof(_name), 1, file);
+	fwrite(_tooltip, sizeof(_tooltip), 1, file);
+	fwrite(&_yesOrNo, sizeof(_yesOrNo), 1, file);
+	fwrite(&_visible, sizeof(_visible), 1, file);
+	fwrite(&_value, sizeof(_value), 1, file);
 	SaveID_END(file);
 }
 
 void Option::Print()
 {
-	std::print("Option : name={}, value={}\n", name_, value_);
-	std::print("\tYesOrNo={}, Visible={}\n", yesOrNo_, visible_);
+	std::print("Option : name={}, value={}\n", _name, _value);
+	std::print("\tYesOrNo={}, Visible={}\n", _yesOrNo, _visible);
 }
 
 void Option::Update() {}
@@ -70,52 +70,52 @@ UplinkObjectId Option::GetOBJECTID()
 
 const char* Option::GetName() const
 {
-	return name_;
+	return _name;
 }
 
 const char* Option::GetTooltip() const
 {
-	return tooltip_;
+	return _tooltip;
 }
 
 bool Option::GetYesOrNo() const
 {
-	return yesOrNo_;
+	return _yesOrNo;
 }
 
 bool Option::GetVisible() const
 {
-	return visible_;
+	return _visible;
 }
 
 int Option::GetValue() const
 {
-	return value_;
+	return _value;
 }
 
 void Option::SetName(const char* name)
 {
-	UplinkAssert(strlen(name) < sizeof(name_));
-	UplinkStrncpy(name_, name, sizeof(name_));
+	UplinkAssert(strlen(name) < sizeof(_name));
+	UplinkStrncpy(_name, name, sizeof(_name));
 }
 
 void Option::SetTooltip(const char* tooltip)
 {
-	UplinkAssert(strlen(tooltip) < sizeof(tooltip_));
-	UplinkStrncpy(tooltip_, tooltip, sizeof(tooltip_));
+	UplinkAssert(strlen(tooltip) < sizeof(_tooltip));
+	UplinkStrncpy(_tooltip, tooltip, sizeof(_tooltip));
 }
 
 void Option::SetYesOrNo(const bool yesOrNo)
 {
-	yesOrNo_ = yesOrNo;
+	_yesOrNo = yesOrNo;
 }
 
 void Option::SetVisible(const bool visible)
 {
-	visible_ = visible;
+	_visible = visible;
 }
 
 void Option::SetValue(const int value)
 {
-	value_ = value;
+	_value = value;
 }

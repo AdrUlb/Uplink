@@ -7,33 +7,33 @@ static char tempdate[0x40];
 
 bool Date::Load(FILE* file)
 {
-	static_assert(sizeof(second_) == 4);
-	static_assert(sizeof(minute_) == 4);
-	static_assert(sizeof(hour_) == 4);
-	static_assert(sizeof(day_) == 4);
-	static_assert(sizeof(month_) == 4);
-	static_assert(sizeof(year_) == 4);
-	static_assert(sizeof(active_) == 1);
+	static_assert(sizeof(_second) == 4);
+	static_assert(sizeof(_minute) == 4);
+	static_assert(sizeof(_hour) == 4);
+	static_assert(sizeof(_day) == 4);
+	static_assert(sizeof(_month) == 4);
+	static_assert(sizeof(_year) == 4);
+	static_assert(sizeof(_active) == 1);
 
-	if (!FileReadData(&second_, sizeof(second_), 1, file))
+	if (!FileReadData(&_second, sizeof(_second), 1, file))
 		return false;
 
-	if (!FileReadData(&minute_, sizeof(minute_), 1, file))
+	if (!FileReadData(&_minute, sizeof(_minute), 1, file))
 		return false;
 
-	if (!FileReadData(&hour_, sizeof(hour_), 1, file))
+	if (!FileReadData(&_hour, sizeof(_hour), 1, file))
 		return false;
 
-	if (!FileReadData(&day_, sizeof(day_), 1, file))
+	if (!FileReadData(&_day, sizeof(_day), 1, file))
 		return false;
 
-	if (!FileReadData(&month_, sizeof(month_), 1, file))
+	if (!FileReadData(&_month, sizeof(_month), 1, file))
 		return false;
 
-	if (!FileReadData(&year_, sizeof(year_), 1, file))
+	if (!FileReadData(&_year, sizeof(_year), 1, file))
 		return false;
 
-	if (!FileReadData(&active_, sizeof(active_), 1, file))
+	if (!FileReadData(&_active, sizeof(_active), 1, file))
 		return false;
 
 	return true;
@@ -41,21 +41,21 @@ bool Date::Load(FILE* file)
 
 void Date::Save(FILE* file)
 {
-	fwrite(&second_, sizeof(second_), 1, file);
-	fwrite(&minute_, sizeof(minute_), 1, file);
-	fwrite(&hour_, sizeof(hour_), 1, file);
-	fwrite(&day_, sizeof(day_), 1, file);
-	fwrite(&month_, sizeof(month_), 1, file);
-	fwrite(&year_, sizeof(year_), 1, file);
-	fwrite(&active_, sizeof(active_), 1, file);
+	fwrite(&_second, sizeof(_second), 1, file);
+	fwrite(&_minute, sizeof(_minute), 1, file);
+	fwrite(&_hour, sizeof(_hour), 1, file);
+	fwrite(&_day, sizeof(_day), 1, file);
+	fwrite(&_month, sizeof(_month), 1, file);
+	fwrite(&_year, sizeof(_year), 1, file);
+	fwrite(&_active, sizeof(_active), 1, file);
 	SaveID_END(file);
 }
 
 void Date::Print()
 {
-	std::println("Date: %d:%d:%d, %d/%d/%d", hour_, minute_, second_, day_, month_, year_);
+	std::println("Date: %d:%d:%d, %d/%d/%d", _hour, _minute, _second, _day, _month, _year);
 
-	if (active_)
+	if (_active)
 		std::println("Syncronised with real world time");
 	else
 		std::println("Not Syncronised with real world time");
@@ -85,12 +85,12 @@ void Date::SetDate(const Date& other)
 
 void Date::SetDate(const int second, const int minute, const int hour, const int day, const int month, const int year)
 {
-	second_ = second;
-	minute_ = minute;
-	hour_ = hour;
-	day_ = day;
-	month_ = month;
-	year_ = year;
+	_second = second;
+	_minute = minute;
+	_hour = hour;
+	_day = day;
+	_month = month;
+	_year = year;
 	AdvanceSecond(0);
 }
 
@@ -107,10 +107,10 @@ bool Date::Before(Date& other) { TODO_ABORT; }
 
 bool Date::Equal(const Date& other) const
 {
-	return year_ == other.year_ &&
-	       month_ == other.month_ &&
-	       day_ == other.day_ &&
-	       hour_ == other.hour_ &&
-	       minute_ == other.minute_ &&
-	       second_ == other.second_;
+	return _year == other._year &&
+	       _month == other._month &&
+	       _day == other._day &&
+	       _hour == other._hour &&
+	       _minute == other._minute &&
+	       _second == other._second;
 }

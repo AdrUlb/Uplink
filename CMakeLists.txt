@@ -20,6 +20,7 @@ set(SOURCES
 		Source/App.hpp
 		Source/ColourOption.hpp
 		Source/Main.cpp
+		Source/MainMenu.cpp
 		Source/MainMenu.hpp
 		Source/Network.hpp
 		Source/Option.cpp

@@ -36,35 +36,35 @@ Options& App::GetOptions() { TODO_ABORT; }
 
 void App::Initialise()
 {
-	options_ = new Options();
-	options_->Load(nullptr);
-	options_->CreateDefaultOptions();
-	initTime_ = static_cast<int>(EclGetAccurateTime());
-	network_ = new Network();
-	mainMenu_ = new MainMenu();
+	_options = new Options();
+	_options->Load(nullptr);
+	_options->CreateDefaultOptions();
+	_initTime = static_cast<int>(EclGetAccurateTime());
+	_network = new Network();
+	_mainMenu = new MainMenu();
 }
 
 void App::Set(const char* path, const char* version, const char* type, const char* date, const char* title)
 {
-	path_ = path;
-	version_ = version;
-	type_ = type;
-	date_ = date;
-	title_ = title;
-	build_ = std::format("Version {} ({})\nCompiled on {}\n", version_, type_, date_);
+	_path = path;
+	_version = version;
+	_type = type;
+	_date = date;
+	_title = title;
+	_build = std::format("Version {} ({})\nCompiled on {}\n", _version, _type, _date);
 
 	auto* homeDir = getenv("HOME");
 	if (homeDir)
 	{
-		usersDir_ = std::string(homeDir) + "/.uplink/";
-		usersTempDir_ = std::string(homeDir) + "/.uplink/userstmp/";
-		usersOldDir_ = std::string(homeDir) + "/.uplink/usersold/";
+		_usersDir = std::string(homeDir) + "/.uplink/";
+		_usersTempDir = std::string(homeDir) + "/.uplink/userstmp/";
+		_usersOldDir = std::string(homeDir) + "/.uplink/usersold/";
 	}
 	else
 	{
-		usersDir_ = path_ + "users/";
-		usersTempDir_ = path_ + "userstmp/";
-		usersOldDir_ = path_ + "usersold/";
+		_usersDir = _path + "users/";
+		_usersTempDir = _path + "userstmp/";
+		_usersOldDir = _path + "usersold/";
 	}
 }
 

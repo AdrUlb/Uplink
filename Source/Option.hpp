@@ -4,11 +4,11 @@
 
 class Option : public UplinkObject
 {
-	char name_[0x40] = "";
-	char tooltip_[0x80] = "";
-	bool yesOrNo_ = false;
-	bool visible_ = true;
-	int value_ = 0;
+	char _name[0x40] = "";
+	char _tooltip[0x80] = "";
+	bool _yesOrNo = false;
+	bool _visible = true;
+	int _value = 0;
 
 public:
 	~Option() override {} // NOLINT(*-use-equals-default)
