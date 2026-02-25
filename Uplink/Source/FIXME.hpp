@@ -1,5 +1,11 @@
 #pragma once
 
+#include <cstdlib>
+#include <print>
+
+#define TODO_ABORT do { std::println(stderr, "ABORT: TODO: {}:{} in {}", __FILE__, __LINE__, __func__); abort(); } while (0)
+#define TODO_PRINT do { static bool printed_ = false; if (!printed_) { std::println(stderr, "TODO: {},{} in {}", __FILE__, __LINE__, __func__); printed_ = true; } } while (0)
+
 class App;
 class dos2unixbuf;
 class Game;
@@ -224,10 +230,10 @@ class SecurityMonitor;
 
 namespace irc
 {
-class CIrcMonitor;
-class CIrcDefaultMonitor;
-class CIrcSessionInfo;
-class CIrcMessage;
-class CIrcSession;
-class CIrcIdentServer;
+	class CIrcMonitor;
+	class CIrcDefaultMonitor;
+	class CIrcSessionInfo;
+	class CIrcMessage;
+	class CIrcSession;
+	class CIrcIdentServer;
 }

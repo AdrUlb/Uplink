@@ -1,6 +1,11 @@
-#include <print>
+#include <csignal>
 
-int main(int argc, char** argv)
+#include "Uplink.hpp"
+
+int main(const int argc, char** argv)
 {
-	std::println("Hello, World!");
+	signal(SIGSEGV, hSignalSIGSEGV);
+	signal(SIGFPE, hSignalSIGFPE);
+	signal(SIGPIPE, hSignalSIGPIPE);
+	RunUplink(argc, argv);
 }
