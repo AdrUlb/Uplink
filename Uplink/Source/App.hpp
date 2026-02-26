@@ -1,7 +1,11 @@
 #pragma once
 
 #include <Tosser/DArray.hpp>
-#include "FIXME.hpp"
+
+#include "MainMenu.hpp"
+#include "Network.hpp"
+#include "Options.hpp"
+#include "PhoneDialler.hpp"
 #include "UplinkObject.hpp"
 
 class App : public UplinkObject

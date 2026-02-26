@@ -9,6 +9,8 @@
 #include "App.hpp"
 #include "Util.hpp"
 
+// TODO:impl
+
 static FILE* file_stdout = nullptr;
 static App* app = nullptr;
 
