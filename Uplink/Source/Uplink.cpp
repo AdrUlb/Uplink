@@ -6,7 +6,8 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-#include "FIXME.hpp"
+#include "App.hpp"
+#include "Util.hpp"
 
 static FILE* file_stdout = nullptr;
 static App* app = nullptr;
@@ -154,13 +155,63 @@ static char* br_find_exe()
 	return path;
 }
 
+static void Init_App(const char* exePath) { TODO_PRINT; }
+static void Init_Options(int argc, char** argv) { TODO_PRINT; }
+static void Init_Game() { TODO_PRINT; }
+static void Init_Graphics() { TODO_PRINT; }
+static void Init_OpenGL(int argc, char** argv) { TODO_PRINT; }
+static void Init_Fonts() { TODO_PRINT; }
+static void Init_Sound() { TODO_PRINT; }
+static void Init_Music() { TODO_PRINT; }
+static void Run_MainMenu() { TODO_PRINT; }
+static void Run_Game() { TODO_PRINT; }
+static void Cleanup_Uplink() { TODO_PRINT; }
+
+static bool VerifyLegitAndCodeCardCheck()
+{
+	TODO_PRINT;
+	return true;
+}
+
+static bool Load_Data()
+{
+	TODO_PRINT;
+	return true;
+}
+
 void RunUplink(const int argc, char** argv)
 {
-	if (argc >= 2 && argv[1][0] == '-' && argv[1][1] == 'v')
+	if (argc > 1 && argv[1][0] == '-' && argv[1][1] == 'v')
 	{
 		std::println(UPLINK_VERSION);
 		return;
 	}
 
-	TODO_ABORT;
+	if (const auto defaultExePath = "/opt/uk.co.introversion.uplink-full/data.dat"; DoesFileExist(defaultExePath))
+	{
+		Init_App(defaultExePath);
+	}
+	else
+	{
+		const auto exePath = br_find_exe();
+		// TODO: check if exePath is valid and handle errors
+		Init_App(exePath);
+	}
+
+	Init_Options(argc, argv);
+	if (!VerifyLegitAndCodeCardCheck() || !Load_Data())
+	{
+		Cleanup_Uplink();
+		return;
+	}
+
+	Init_Game();
+	Init_Graphics();
+	Init_OpenGL(argc, argv);
+	Init_Fonts();
+	Init_Sound();
+	Init_Music();
+	Run_MainMenu();
+	Run_Game();
+	Cleanup_Uplink();
 }
