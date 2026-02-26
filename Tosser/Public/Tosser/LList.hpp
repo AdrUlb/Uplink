@@ -101,6 +101,11 @@ public:
 		_cached = nullptr;
 	}
 
+	void PutData(const T& data)
+	{
+		PutDataAtEnd(data);
+	}
+
 	void RemoveData(const int index)
 	{
 		auto i = 0;

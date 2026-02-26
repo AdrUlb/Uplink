@@ -24,6 +24,20 @@ template<typename T> class BTree
 		}
 	}
 
+	static void RecursiveConvertIndexToDArray(DArray<const char*>* array, BTree* tree)
+	{
+		assert(array);
+
+		while (tree)
+		{
+			if (tree->_name)
+				array->PutData(tree->_name);
+
+			RecursiveConvertIndexToDArray(array, tree->_left);
+			tree = tree->_right;
+		}
+	}
+
 public:
 	BTree() = default;
 
@@ -43,10 +57,22 @@ public:
 		Empty();
 	}
 
+	[[nodiscard]] const char* NodeName() const { return _name; }
+	[[nodiscard]] T& NodeData() { return _data; }
+	[[nodiscard]] BTree* Left() const { return _left; }
+	[[nodiscard]] BTree* Right() const { return _right; }
+
 	DArray<T>* ConvertToDArray()
 	{
 		const auto array = new DArray<T>();
 		RecursiveConvertToDArray(array, this);
+		return array;
+	}
+
+	DArray<const char*>* ConvertIndexToDArray()
+	{
+		const auto array = new DArray<const char*>();
+		RecursiveConvertIndexToDArray(array, this);
 		return array;
 	}
 
