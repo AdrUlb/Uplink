@@ -129,7 +129,6 @@ class ClientStatusInterface;
 class NetworkScreen;
 class NetworkClient;
 class NetworkServer;
-class Option;
 class FrameRate;
 class View;
 class Agent;

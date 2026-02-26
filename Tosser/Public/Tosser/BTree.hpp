@@ -25,6 +25,8 @@ template<typename T> class BTree
 	}
 
 public:
+	BTree() = default;
+
 	BTree(const char* name, const T& data)
 	{
 		_name = new char[strlen(name) + 1];
