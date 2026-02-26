@@ -7,4 +7,6 @@ string(APPEND CMAKE_C_FLAGS "-Wall -Wextra -pedantic")
 project(Uplink VERSION 1.55 LANGUAGES C CXX)
 
 add_subdirectory(Tosser)
+add_subdirectory(Bungle)
+add_subdirectory(Redshirt)
 add_subdirectory(Uplink)
