@@ -2,7 +2,18 @@
 
 #include "FIXME.hpp"
 
-bool Option::Load(FILE* file) { TODO_ABORT; }
+bool Option::Load(FILE* file)
+{
+	LoadID(file);
+	FileReadStringBuf(_name, file);
+	FileReadStringBuf(_tooltip, file);
+	FileReadValue(_yesOrNo, file);
+	FileReadValue(_visible, file);
+	FileReadValue(_value, file);
+	LoadID_END(file);
+	return true;
+}
+
 void Option::Save(FILE* file) { TODO_ABORT; }
 void Option::Print() { TODO_ABORT; }
 

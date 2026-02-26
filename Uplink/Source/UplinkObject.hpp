@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cstdio>
+#include "Util.hpp"
 
 enum class UplinkObjectID
 {
@@ -65,4 +65,21 @@ public:
 	virtual void Update() {}
 	virtual const char* GetID() { return "UOBJ"; }
 	virtual UplinkObjectID GetOBJECTID() { return UplinkObjectID::None; }
+
+#pragma region TODO: Remove because useless?
+	char* GetID_END()
+	{
+		const auto str = new char[13];
+		UplinkSnprintf(str, 0xDu, "%s_END", GetID());
+		snprintf(str, 0xDu, "%s_END", GetID());
+		return str;
+	}
+
+	// ReSharper disable CppMemberFunctionMayBeStatic
+	void LoadID(const FILE* file) { (void)file; } // NOLINT(*-convert-member-functions-to-static)
+	void LoadID_END(const FILE* file) { (void)file; } // NOLINT(*-convert-member-functions-to-static)
+	void SaveID(const FILE* file) { (void)file; } // NOLINT(*-convert-member-functions-to-static)
+	void SaveID_END(const FILE* file) { (void)file; } // NOLINT(*-convert-member-functions-to-static)
+	// ReSharper restore CppMemberFunctionMayBeStatic
+#pragma endregion
 };
