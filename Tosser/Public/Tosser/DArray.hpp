@@ -16,7 +16,7 @@ public:
 		Empty();
 	}
 
-	[[nodiscard]] int Size(int size) const { return _size; }
+	[[nodiscard]] int Size() const { return _size; }
 
 	void SetSize(const int size)
 	{

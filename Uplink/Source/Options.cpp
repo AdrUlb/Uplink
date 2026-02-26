@@ -43,7 +43,18 @@ void Option::SetTooltip(char* tooltip)
 
 #include "FIXME.hpp"
 
-Options::~Options() { TODO_ABORT; }
+Options::~Options()
+{
+	DeleteBTreeData(&_options);
+
+	const auto colours = _colours.ConvertToDArray();
+	for (auto i = 0; i < colours->Size(); i++)
+		if (colours->ValidIndex(i))
+			delete colours->GetData(i);
+
+	delete colours;
+}
+
 bool Options::Load(FILE* file) { TODO_ABORT; }
 void Options::Save(FILE* file) { TODO_ABORT; }
 void Options::Print() { TODO_ABORT; }

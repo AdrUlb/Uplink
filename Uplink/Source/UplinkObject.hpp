@@ -66,7 +66,7 @@ public:
 	virtual const char* GetID() { return "UOBJ"; }
 	virtual UplinkObjectID GetOBJECTID() { return UplinkObjectID::None; }
 
-#pragma region TODO: Remove because useless?
+#pragma region NOTE: Can probably be removed because useless?
 	char* GetID_END()
 	{
 		const auto str = new char[13];
@@ -83,3 +83,10 @@ public:
 	// ReSharper restore CppMemberFunctionMayBeStatic
 #pragma endregion
 };
+
+void DeleteBTreeData(BTree<UplinkObject*>* tree);
+
+template<std::derived_from<UplinkObject> T> void DeleteBTreeData(BTree<T*>* tree)
+{
+	DeleteBTreeData(reinterpret_cast<BTree<UplinkObject*>*>(tree));
+}

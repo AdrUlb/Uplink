@@ -197,7 +197,7 @@ void RunUplink(const int argc, char** argv)
 	else
 	{
 		const auto exePath = br_find_exe();
-		// TODO: check if exePath is valid and handle errors
+		// NOTE: should probably check if exePath is NULL
 		Init_App(exePath);
 	}
 

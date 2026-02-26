@@ -6,6 +6,8 @@
 #include <print>
 #include <unistd.h>
 
+#include "Tosser/BTree.hpp"
+
 #define UplinkAssert(condition) \
 	do \
 	{ \
