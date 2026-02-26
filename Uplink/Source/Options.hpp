@@ -33,9 +33,9 @@ class Option : public UplinkObject
 
 	void SetName(const char* name);
 	void SetTooltip(char* tooltip);
-	void SetValue(int value);
-	void SetVisible(bool visible);
-	void SetYesOrNo(bool yesOrNo);
+	void SetValue(const int value) { _value = value; }
+	void SetVisible(const bool visible) { _visible = visible; }
+	void SetYesOrNo(const bool yesOrNo) { _yesOrNo = yesOrNo; }
 };
 
 class Options : public UplinkObject

@@ -1,27 +1,47 @@
 #include "Options.hpp"
 
-#include "FIXME.hpp"
-
 bool Option::Load(FILE* file)
 {
 	LoadID(file);
-	FileReadStringBuf(_name, file);
-	FileReadStringBuf(_tooltip, file);
-	FileReadValue(_yesOrNo, file);
-	FileReadValue(_visible, file);
-	FileReadValue(_value, file);
+	Load_StringBuf(_name, file);
+	Load_StringBuf(_tooltip, file);
+	Load_Field(_yesOrNo, file);
+	Load_Field(_visible, file);
+	Load_Field(_value, file);
 	LoadID_END(file);
 	return true;
 }
 
-void Option::Save(FILE* file) { TODO_ABORT; }
-void Option::Print() { TODO_ABORT; }
+void Option::Save(FILE* file)
+{
+	SaveID(file);
+	Save_StringBuf(_name, file);
+	Save_StringBuf(_tooltip, file);
+	Save_Field(_yesOrNo, file);
+	Save_Field(_visible, file);
+	Save_Field(_value, file);
+	SaveID_END(file);
+}
 
-void Option::SetName(const char* name) { TODO_ABORT; }
-void Option::SetTooltip(char* tooltip) { TODO_ABORT; }
-void Option::SetValue(int value) { TODO_ABORT; }
-void Option::SetVisible(bool visible) { TODO_ABORT; }
-void Option::SetYesOrNo(bool yesOrNo) { TODO_ABORT; }
+void Option::Print()
+{
+	std::println("Option : name={}, value={}", _name, _value);
+	std::println("\tYesOrNo={}, Visible={}", _yesOrNo, _visible);
+}
+
+void Option::SetName(const char* name)
+{
+	UplinkAssert(strlen(name) < sizeof(_name));
+	UplinkStrncpy(_name, name, sizeof(_name));
+}
+
+void Option::SetTooltip(char* tooltip)
+{
+	UplinkAssert(strlen(tooltip) < sizeof(_tooltip));
+	UplinkStrncpy(_tooltip, tooltip, sizeof(_tooltip));
+}
+
+#include "FIXME.hpp"
 
 Options::~Options() { TODO_ABORT; }
 bool Options::Load(FILE* file) { TODO_ABORT; }
