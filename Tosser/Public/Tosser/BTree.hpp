@@ -8,7 +8,7 @@ template<typename T> class BTree
 	BTree* _left = nullptr;
 	BTree* _right = nullptr;
 	char* _name = nullptr;
-	T _data = nullptr;
+	T _data = { };
 
 	static void RecursiveConvertToDArray(DArray<T>* array, BTree* tree)
 	{
@@ -91,7 +91,7 @@ public:
 		return tree;
 	}
 
-	void PutData(const char* name, T& data)
+	void PutData(const char* name, const T& data)
 	{
 		auto tree = this;
 
@@ -101,7 +101,7 @@ public:
 			{
 				tree->_name = new char[strlen(name) + 1];
 				strcpy(tree->_name, name);
-				tree->_data = *data;
+				tree->_data = data;
 				return;
 			}
 
@@ -127,3 +127,7 @@ public:
 		}
 	}
 };
+
+// For testing
+//template class BTree<int>;
+//template class BTree<void*>;

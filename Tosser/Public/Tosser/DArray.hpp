@@ -136,7 +136,7 @@ public:
 		return count;
 	}
 
-	int& operator[](const int index)
+	T& operator[](const int index)
 	{
 		assert(index < _size && index >= 0);
 		if (!_valid[index])
@@ -144,3 +144,7 @@ public:
 		return GetData(index);
 	}
 };
+
+// For testing
+//template class DArray<int>;
+//template class DArray<void*>;
