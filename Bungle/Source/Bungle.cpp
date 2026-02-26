@@ -22,7 +22,7 @@ struct LocalFileHeader
 	char* Id = nullptr;
 };
 
-BTree<LocalFileHeader*> files;
+static BTree<LocalFileHeader*> files;
 
 static void BglCloseZipFile_Recursive(BTree<LocalFileHeader*>* files, LList<const char*>* removableIds, const char* id)
 {
