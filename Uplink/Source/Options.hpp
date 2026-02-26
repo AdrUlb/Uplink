@@ -4,11 +4,18 @@
 #include "Tosser/BTree.hpp"
 #include "Tosser/LList.hpp"
 
-// TODO:decl
-struct OptionChange;
+struct OptionChange
+{
+	char Name[64];
+	int Value;
+};
 
-// TODO:decl
-struct ColourOption;
+struct ColourOption
+{
+	float Red;
+	float Green;
+	float Blue;
+};
 
 class Option : public UplinkObject
 {
