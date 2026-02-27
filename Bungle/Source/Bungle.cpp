@@ -71,98 +71,8 @@ static void BglCloseAllFiles(BTree<LocalFileHeader*>* files)
 	files->Empty();
 }
 
-void BglCloseAllFiles()
-{
-	BglCloseAllFiles(&files);
-}
-
-void BglCloseZipFile(const char* id)
-{
-	LList<const char*> removableIds;
-	BglCloseZipFile_Recursive(&files, &removableIds, id);
-
-	for (auto i = 0; i < removableIds.Size(); i++)
-	{
-		const auto filename = removableIds.GetData(i);
-		assert(filename);
-
-		LocalFileHeader* lfi = files.GetData(filename);
-		assert(lfi);
-
-		files.RemoveData(filename);
-		delete[] lfi->FileName;
-		delete[] lfi->ExtraField;
-		delete[] lfi->Data;
-		delete[] lfi->Id;
-		operator delete(lfi);
-	}
-}
-
-DArray<const char*>* BglListFiles(const char* appPath, const char* dirName, const char* query)
-{
-	char fileDirPath[256];
-	char dirPath[256];
-
-	sprintf(dirPath, "%s%s", appPath, dirName);
-	BglSlashify(dirPath);
-
-	const auto list = files.ConvertIndexToDArray();
-
-	for (auto i = 0; i < list->Size(); i++)
-	{
-		if (!list->ValidIndex(i))
-			continue;
-
-		const auto fileName = list->GetData(i);
-
-		strncpy(fileDirPath, fileName, strlen(dirPath));
-		fileDirPath[strlen(dirPath)] = 0;
-
-		if (!strstr(fileName, query) || strcmp(fileDirPath, dirPath) != 0)
-			list->RemoveData(i);
-	}
-
-	return list;
-}
-
-bool BglExtractFile(const char* fileName, const char* destPath)
-{
-	const auto slashified = new char[strlen(fileName) + 1];
-	strcpy(slashified, fileName);
-	BglSlashify(slashified);
-
-	const auto data = files.GetData(slashified);
-	delete[] slashified;
-
-	if (!data)
-		return false;
-
-	const auto file = destPath ? fopen(destPath, "wb") : fopen(fileName, "wb");
-	if (!file)
-		return false;
-
-	fwrite(data->Data, data->UncompressedSize, 1, file);
-	fclose(file);
-
-	return true;
-}
-
-bool BglFileLoaded(const char* fileName)
-{
-	const auto slashified = new char[strlen(fileName) + 1];
-	strcpy(slashified, fileName);
-	BglSlashify(slashified);
-
-	const auto data = files.GetData(slashified);
-	delete[] slashified;
-
-	return data != nullptr;
-}
-
 bool BglOpenZipFile(FILE* file, const char* appPath, const char* id)
 {
-	char filePath[256];
-
 	if (!file)
 		return false;
 
@@ -225,9 +135,9 @@ bool BglOpenZipFile(FILE* file, const char* appPath, const char* id)
 			continue;
 		}
 
-		sprintf(filePath, "%s%s", appPath, lfi->FileName);
-		BglSlashify(filePath);
-		files.PutData(filePath, lfi);
+		auto filePath = std::format("{}{}", appPath, lfi->FileName);
+		BglSlashify(filePath.data());
+		files.PutData(filePath.c_str(), lfi);
 	}
 
 	return true;
@@ -242,4 +152,83 @@ bool BglOpenZipFile(const char* filePath, const char* appPath, const char* id)
 	const auto ret = BglOpenZipFile(file, appPath, id);
 	fclose(file);
 	return ret;
+}
+
+void BglCloseZipFile(const char* id)
+{
+	LList<const char*> removableIds;
+	BglCloseZipFile_Recursive(&files, &removableIds, id);
+
+	for (auto i = 0; i < removableIds.Size(); i++)
+	{
+		const auto filename = removableIds.GetData(i);
+		assert(filename);
+
+		LocalFileHeader* lfi = files.GetData(filename);
+		assert(lfi);
+
+		files.RemoveData(filename);
+		delete[] lfi->FileName;
+		delete[] lfi->ExtraField;
+		delete[] lfi->Data;
+		delete[] lfi->Id;
+		operator delete(lfi);
+	}
+}
+
+void BglCloseAllFiles()
+{
+	BglCloseAllFiles(&files);
+}
+
+bool BglFileLoaded(const char* fileName)
+{
+	std::string slashified = fileName;
+	BglSlashify(slashified.data());
+
+	const auto data = files.GetData(slashified.c_str());
+	return data != nullptr;
+}
+
+bool BglExtractFile(const char* fileName, const char* destPath)
+{
+	std::string slashified = fileName;
+	BglSlashify(slashified.data());
+
+	const auto data = files.GetData(slashified.c_str());
+
+	if (!data)
+		return false;
+
+	const auto file = destPath ? fopen(destPath, "wb") : fopen(fileName, "wb");
+	if (!file)
+		return false;
+
+	fwrite(data->Data, data->UncompressedSize, 1, file);
+	fclose(file);
+
+	return true;
+}
+
+DArray<const char*>* BglListFiles(const char* appPath, const char* dir, const char* query)
+{
+	auto dirPath = std::format("{}{}", appPath, dir);
+	BglSlashify(dirPath.data());
+
+	const auto list = files.ConvertIndexToDArray();
+
+	for (auto i = 0; i < list->Size(); i++)
+	{
+		if (!list->ValidIndex(i))
+			continue;
+
+		const auto fileName = list->GetData(i);
+
+		const auto fileDirPath = std::string(fileName, dirPath.length());
+
+		if (!strstr(fileName, query) || fileDirPath != dirPath)
+			list->RemoveData(i);
+	}
+
+	return list;
 }
