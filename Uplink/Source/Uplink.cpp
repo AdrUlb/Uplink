@@ -13,7 +13,7 @@
 // NOTIMPL:impl
 
 static FILE* file_stdout = nullptr;
-static App* app = nullptr;
+App* app = nullptr;
 
 #pragma region Signal Handlers and Exception Handling
 

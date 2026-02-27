@@ -1,4 +1,7 @@
 #pragma once
+#include "App.hpp"
+
+extern App* app;
 
 [[noreturn]] void hSignalSIGSEGV(int sig);
 [[noreturn]] void hSignalSIGFPE(int sig);

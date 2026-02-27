@@ -35,6 +35,16 @@ public:
 	void Update() override;
 	const char* GetID() override { return "APP"; }
 
+	[[nodiscard]] const char* Path() const { return _path; }
+	[[nodiscard]] const char* UsersPath() const { return _usersPath; }
+	[[nodiscard]] const char* UsersTempPath() const { return _usersTempPath; }
+	[[nodiscard]] const char* UsersOldPath() const { return _usersOldPath; }
+	[[nodiscard]] const char* Version() const { return _version; }
+	[[nodiscard]] const char* Type() const { return _type; }
+	[[nodiscard]] const char* Date() const { return _date; }
+	[[nodiscard]] const char* Title() const { return _title; }
+	[[nodiscard]] const char* Build() const { return _build; }
+
 	[[nodiscard]] bool Closed() const { return _closed; }
 	MainMenu* GetMainMenu();
 	Network* GetNetwork();

@@ -84,9 +84,4 @@ public:
 #pragma endregion
 };
 
-void DeleteBTreeData(BTree<UplinkObject*>* tree);
-
-template<std::derived_from<UplinkObject> T> void DeleteBTreeData(BTree<T*>* tree)
-{
-	DeleteBTreeData(reinterpret_cast<BTree<UplinkObject*>*>(tree));
-}
+UplinkObject* CreateUplinkObject(UplinkObjectID id);

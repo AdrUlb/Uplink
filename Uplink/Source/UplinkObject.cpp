@@ -1,15 +1,9 @@
 #include "UplinkObject.hpp"
 
-void DeleteBTreeData(BTree<UplinkObject*>* tree)
+#include "NOTIMPL.hpp"
+
+UplinkObject* CreateUplinkObject(UplinkObjectID id)
 {
-	UplinkAssert(tree);
-
-	const auto array = tree->ConvertToDArray();
-	for (auto i = 0; i < array->Size(); i++)
-	{
-		if (array->ValidIndex(i))
-			delete array->GetData(i);
-	}
-
-	delete array;
+	(void)id;
+	NOTIMPL_ABORT;
 }
