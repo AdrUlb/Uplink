@@ -1,4 +1,4 @@
 #pragma once
 
-// TODO:decl
+// NOTIMPL:decl
 class PhoneDialler;

@@ -41,7 +41,7 @@ void Option::SetTooltip(char* tooltip)
 	UplinkStrncpy(_tooltip, tooltip, sizeof(_tooltip));
 }
 
-#include "FIXME.hpp"
+#include "NOTIMPL.hpp"
 
 Options::~Options()
 {
@@ -55,24 +55,24 @@ Options::~Options()
 	delete colours;
 }
 
-bool Options::Load(FILE* file) { TODO_ABORT; }
-void Options::Save(FILE* file) { TODO_ABORT; }
-void Options::Print() { TODO_ABORT; }
+bool Options::Load(FILE* file) { NOTIMPL_ABORT; }
+void Options::Save(FILE* file) { NOTIMPL_ABORT; }
+void Options::Print() { NOTIMPL_ABORT; }
 
-void Options::CreateDefaultOptions() { TODO_ABORT; }
-void Options::RequestShutdownChange(const char* name, int value) { TODO_ABORT; }
-void Options::ApplyShutdownChanges() { TODO_ABORT; }
+void Options::CreateDefaultOptions() { NOTIMPL_ABORT; }
+void Options::RequestShutdownChange(const char* name, int value) { NOTIMPL_ABORT; }
+void Options::ApplyShutdownChanges() { NOTIMPL_ABORT; }
 
-Option* Options::GetOption(const char* name) { TODO_ABORT; }
-int Options::GetOptionValue(const char* name) { TODO_ABORT; }
-const char* Options::GetThemeDescription() { TODO_ABORT; }
-const char* Options::GetThemeName() { TODO_ABORT; }
-const char* Options::GetThemeTitle() { TODO_ABORT; }
-bool Options::IsOptionEqualTo(const char* name, int value) { TODO_ABORT; }
-void Options::SetOptionValue(const char* name, int value) { TODO_ABORT; }
-void Options::SetOptionValue(const char* name, int value, const char* tooltip, bool yesOrNo, bool visible) { TODO_ABORT; }
-void Options::SetThemeName(const char* name) { TODO_ABORT; }
-char* Options::ThemeFilename(const char* name) { TODO_ABORT; }
+Option* Options::GetOption(const char* name) { NOTIMPL_ABORT; }
+int Options::GetOptionValue(const char* name) { NOTIMPL_ABORT; }
+const char* Options::GetThemeDescription() { NOTIMPL_ABORT; }
+const char* Options::GetThemeName() { NOTIMPL_ABORT; }
+const char* Options::GetThemeTitle() { NOTIMPL_ABORT; }
+bool Options::IsOptionEqualTo(const char* name, int value) { NOTIMPL_ABORT; }
+void Options::SetOptionValue(const char* name, int value) { NOTIMPL_ABORT; }
+void Options::SetOptionValue(const char* name, int value, const char* tooltip, bool yesOrNo, bool visible) { NOTIMPL_ABORT; }
+void Options::SetThemeName(const char* name) { NOTIMPL_ABORT; }
+char* Options::ThemeFilename(const char* name) { NOTIMPL_ABORT; }
 
-LList<Option*>* Options::GetAllOptions(const char* query, bool includeInvisible) { TODO_ABORT; }
-ColourOption* Options::GetColour(const char* name) { TODO_ABORT; }
+LList<Option*>* Options::GetAllOptions(const char* query, bool includeInvisible) { NOTIMPL_ABORT; }
+ColourOption* Options::GetColour(const char* name) { NOTIMPL_ABORT; }

@@ -7,10 +7,10 @@
 #include <sys/stat.h>
 
 #include "App.hpp"
-#include "FIXME.hpp"
+#include "NOTIMPL.hpp"
 #include "Util.hpp"
 
-// TODO:impl
+// NOTIMPL:impl
 
 static FILE* file_stdout = nullptr;
 static App* app = nullptr;
@@ -19,7 +19,7 @@ static App* app = nullptr;
 
 [[noreturn]] static void RunUplinkExceptionHandling()
 {
-	TODO_ABORT;
+	NOTIMPL_ABORT;
 }
 
 #define X(signame) \
@@ -158,27 +158,27 @@ static char* br_find_exe()
 	return path;
 }
 
-static void Init_App(const char* exePath) { TODO_PRINT; }
-static void Init_Options(int argc, char** argv) { TODO_PRINT; }
-static void Init_Game() { TODO_PRINT; }
-static void Init_Graphics() { TODO_PRINT; }
-static void Init_OpenGL(int argc, char** argv) { TODO_PRINT; }
-static void Init_Fonts() { TODO_PRINT; }
-static void Init_Sound() { TODO_PRINT; }
-static void Init_Music() { TODO_PRINT; }
-static void Run_MainMenu() { TODO_PRINT; }
-static void Run_Game() { TODO_PRINT; }
-static void Cleanup_Uplink() { TODO_PRINT; }
+static void Init_App(const char* exePath) { NOTIMPL_PRINT; }
+static void Init_Options(int argc, char** argv) { NOTIMPL_PRINT; }
+static void Init_Game() { NOTIMPL_PRINT; }
+static void Init_Graphics() { NOTIMPL_PRINT; }
+static void Init_OpenGL(int argc, char** argv) { NOTIMPL_PRINT; }
+static void Init_Fonts() { NOTIMPL_PRINT; }
+static void Init_Sound() { NOTIMPL_PRINT; }
+static void Init_Music() { NOTIMPL_PRINT; }
+static void Run_MainMenu() { NOTIMPL_PRINT; }
+static void Run_Game() { NOTIMPL_PRINT; }
+static void Cleanup_Uplink() { NOTIMPL_PRINT; }
 
 static bool VerifyLegitAndCodeCardCheck()
 {
-	TODO_PRINT;
+	NOTIMPL_PRINT;
 	return true;
 }
 
 static bool Load_Data()
 {
-	TODO_PRINT;
+	NOTIMPL_PRINT;
 	return true;
 }
 
