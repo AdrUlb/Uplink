@@ -224,9 +224,7 @@ DArray<const char*>* BglListFiles(const char* appPath, const char* dir, const ch
 
 		const auto fileName = list->GetData(i);
 
-		const auto fileDirPath = std::string(fileName, dirPath.length());
-
-		if (!strstr(fileName, query) || fileDirPath != dirPath)
+		if (const auto fileDirPath = std::string(fileName, dirPath.length()); !strstr(fileName, query) || fileDirPath != dirPath)
 			list->RemoveData(i);
 	}
 

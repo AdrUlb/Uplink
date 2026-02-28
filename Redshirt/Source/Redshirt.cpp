@@ -184,13 +184,13 @@ static bool writeRsEncryptedCheckSum(FILE* stream)
 
 static void decryptBuffer(uint8_t* buffer, const size_t size)
 {
-	for (auto i = 0; i < size; i++)
+	for (size_t i = 0; i < size; i++)
 		buffer[i] += 0x80;
 }
 
 static void encryptBuffer(uint8_t* buffer, const size_t size)
 {
-	for (auto i = 0; i < size; i++)
+	for (size_t i = 0; i < size; i++)
 		buffer[i] += 0x80;
 }
 
@@ -370,7 +370,7 @@ bool RsLoadArchive(const char* id)
 		if (c0 != '\\' && c0 != '/')
 			return false;
 
-		if (c1 != 'l' && c1 != 'L' || c2 != 'i' && c2 != 'I' || c3 != 'b' && c3 != 'B' || c4 != '\\' && c4 != '/')
+		if ((c1 != 'l' && c1 != 'L') || (c2 != 'i' && c2 != 'I') || (c3 != 'b' && c3 != 'B') || (c4 != '\\' && c4 != '/'))
 			return false;
 
 		filePath.resize(apppathLength - 4);

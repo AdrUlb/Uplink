@@ -1,4 +1,5 @@
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS Source/*.cpp Source/*.hpp Public/*.hpp)
 add_library(Redshirt STATIC ${SOURCES})
 target_include_directories(Redshirt PUBLIC Public)
+target_compile_options(Redshirt PRIVATE -Wall -Wextra -Wno-unused)
 target_link_libraries(Redshirt PUBLIC Tosser Bungle)

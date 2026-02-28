@@ -1,7 +1,6 @@
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS Source/*.cpp Source/*.hpp)
 add_executable(Uplink ${SOURCES})
 target_compile_definitions(Uplink PRIVATE -DUPLINK_VERSION="${PROJECT_VERSION}")
-
 find_package(OpenSSL COMPONENTS Crypto)
-
+target_compile_options(Uplink PRIVATE -Wall -Wextra -Wno-unused)
 target_link_libraries(Uplink PRIVATE Tosser Redshirt OpenSSL::Crypto)

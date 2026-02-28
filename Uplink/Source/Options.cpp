@@ -10,10 +10,10 @@ bool Option::Load(FILE* file)
 {
 	LoadID(file);
 
-	if (!LoadFixedString(_name, sizeof(_name), file))
+	if (!LoadFixedString(_name, NAME_BUFFER_MAX, file))
 		return false;
 
-	if (!LoadFixedString(_tooltip, sizeof(_tooltip), file))
+	if (!LoadFixedString(_tooltip, TOOLTIP_BUFFER_MAX, file))
 		return false;
 
 	if (!LoadData(&_yesOrNo, 1, file))
@@ -32,11 +32,11 @@ bool Option::Load(FILE* file)
 void Option::Save(FILE* file)
 {
 	SaveID(file);
-	SaveFixedString(_name, file);
-	SaveFixedString(_tooltip, file);
-	WriteData(&_yesOrNo, 1, file);
-	WriteData(&_visible, 1, file);
-	WriteData(&_value, 1, file);
+	SaveFixedString(_name, NAME_BUFFER_MAX, file);
+	SaveFixedString(_tooltip, TOOLTIP_BUFFER_MAX, file);
+	SaveData(&_yesOrNo, 1, file);
+	SaveData(&_visible, 1, file);
+	SaveData(&_value, 1, file);
 	SaveID_END(file);
 }
 
@@ -48,14 +48,14 @@ void Option::Print()
 
 void Option::SetName(const char* name)
 {
-	UplinkAssert(strlen(name) < sizeof(_name));
-	UplinkStrncpy(_name, name, sizeof(_name));
+	UplinkAssert(strlen(name) < NAME_BUFFER_MAX);
+	UplinkStrncpy(_name, name, NAME_BUFFER_MAX);
 }
 
 void Option::SetTooltip(char* tooltip)
 {
-	UplinkAssert(strlen(tooltip) < sizeof(_tooltip));
-	UplinkStrncpy(_tooltip, tooltip, sizeof(_tooltip));
+	UplinkAssert(strlen(tooltip) < TOOLTIP_BUFFER_MAX);
+	UplinkStrncpy(_tooltip, tooltip, TOOLTIP_BUFFER_MAX);
 }
 
 Options::~Options()
@@ -74,8 +74,8 @@ Options::~Options()
 
 bool Options::Load(FILE* file)
 {
-	char path[256];
-	UplinkSnprintf(path, sizeof(path), "%soptions", app->UsersPath());
+	char path[PATH_MAX];
+	UplinkSnprintf(path, PATH_MAX, "%soptions", app->UsersPath());
 
 	std::print("Loading uplink options from {}...", path);
 
@@ -119,19 +119,19 @@ bool Options::Load(FILE* file)
 
 	if (!LoadBTree(&_options, file))
 	{
-		DeleteBTreeData(&this->_options);
+		DeleteBTreeData(&_options);
 		return false;
 	}
 
 	LoadID_END(file);
 
-	char src[128];
-	uint32_t ptr;
+	uint32_t themeNameLength;
+	char themeName[THEME_NAME_BUFFER_MAX];
 
-	if (fgetc(file) == 't' && LoadData(&ptr, 4, file) && ptr + 1 < sizeof(src) && fread(src, ptr, 1, file) == 1)
+	if (fgetc(file) == 't' && LoadData(&themeNameLength, 4, file) && themeNameLength + 1 < THEME_NAME_BUFFER_MAX && fread(themeName, themeNameLength, 1, file) == 1)
 	{
-		UplinkStrncpy(this->_themeName, src, sizeof(src));
-		src[ptr] = 0;
+		UplinkStrncpy(_themeName, themeName, THEME_NAME_BUFFER_MAX);
+		themeName[themeNameLength] = 0;
 	}
 
 	ret = true;
@@ -151,7 +151,40 @@ end:
 	return ret;
 }
 
-void Options::Save(FILE* file) { NOTIMPL_ABORT; }
+void Options::Save(FILE* file)
+{
+	MakeDirectory(app->UsersPath());
+
+	char path[PATH_MAX];
+	UplinkSnprintf(path, PATH_MAX, "%soptions", app->UsersPath());
+
+	printf("Saving uplink options to %s...", path);
+	file = fopen(path, "wb");
+
+	if (!file)
+	{
+		std::print("failed");
+		return;
+	}
+
+	std::print("success");
+
+	fwrite(SAVE_VERSION_CURRENT, 6, 1, file);
+
+	SaveID(file);
+	SaveBTree(&_options, file);
+	SaveID_END(file);
+
+	fputc('t', file);
+	const uint32_t themeNameSize = strlen(this->_themeName);
+	SaveData(&themeNameSize, 4, file);
+	SaveFixedString(_themeName, themeNameSize, file);
+	
+	fwrite(_themeName, themeNameSize, 1, file);
+	fclose(file);
+	RsEncryptFile(path);
+}
+
 void Options::Print() { NOTIMPL_ABORT; }
 
 void Options::CreateDefaultOptions() { NOTIMPL_ABORT; }

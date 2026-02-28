@@ -3,8 +3,10 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <limits.h>
 #include <print>
 #include <unistd.h>
+#include <sys/stat.h>
 
 #include "Tosser/BTree.hpp"
 
@@ -19,12 +21,7 @@
 	}
 
 #define PrintAbort(condition, format, ...) \
-	if (!(condition)) \
-	{ \
-		std::println("Print Abort: " __FILE__ " ln " XSTRINGIFY(__LINE__) " : " format __VA_OPT__(,) __VA_ARGS__); \
-		return false; \
-	}
-
+	({ if (!(condition)) std::println("Print Abort: " __FILE__ " ln " XSTRINGIFY(__LINE__) " : " format __VA_OPT__(,) __VA_ARGS__); !(condition); })
 #define UplinkAssert(condition) \
 	do \
 	{ \
@@ -54,9 +51,9 @@
 				"An Uplink strncpy Failure has occured\n" \
 				"======================================\n" \
 				" Location    : {}, line {}\n" \
-				" Dest. size  : %d\n" \
-				" Source size : %s\n" \
-				" Str. Source : %s\n", \
+				" Dest. size  : {}\n" \
+				" Source size : {}\n" \
+				" Str. Source : {}\n", \
 				__FILE__, __LINE__, max, sourceLen, source \
 			); \
 			abort(); \
@@ -69,22 +66,31 @@
 #define UplinkSnprintf(buffer, max, format, ...) \
 	do \
 	{ \
-		if (snprintf(buffer, max, format __VA_OPT__(,) __VA_ARGS__) >= max) \
+		const auto result = snprintf(buffer, max, format __VA_OPT__(,) __VA_ARGS__); \
+		if (max < 0 || result < 0 || static_cast<size_t>(result) >= static_cast<size_t>(max)) \
 		{ \
 			std::print( \
 				"\n" \
 				"An Uplink snprintf Failure has occured\n" \
 				"======================================\n" \
 				" Location    : {}, line {}\n" \
-				" Buffer size : %d\n" \
-				" Format      : %s\n" \
-				" Buffer      : %s\n", \
+				" Buffer size : {}\n" \
+				" Format      : {}\n" \
+				" Buffer      : {}\n", \
 				__FILE__, __LINE__, max, format, buffer \
 			); \
 			abort(); \
 		} \
 	} \
 	while (0)
+
+#define LoadData(ptr, size, file) \
+	({ \
+		const auto success = FileReadDataInt(__FILE__, __LINE__, ptr, size, 1, file); \
+		success; \
+	})
+
+#define SaveData(ptr, size, file) ({ fwrite(ptr, size, 1, file) == 1; })
 
 #define LoadFixedString(buffer, size, file) \
 	({ \
@@ -96,25 +102,29 @@
 		success; \
 	})
 
-#define SaveFixedString(buffer, file) ({ fwrite(buffer, sizeof(buffer), 1, file) == 1; })
-
-#define LoadData(ptr, size, file) \
-	({ \
-		const auto success = FileReadDataInt(__FILE__, __LINE__, ptr, size, 1, file); \
-		success; \
-	})
-
-#define WriteData(ptr, size, file) ({ fwrite(ptr, size, 1, file) == 1; })
+#define SaveFixedString(buffer, size, file) ({ fwrite(buffer, size, 1, file) == 1; })
 
 #define LoadDynamicString(buffer, file) LoadDynamicStringInt(__FILE__, __LINE__, buffer, file)
 
 bool FileReadDataInt(const char* sourceFile, int sourceLine, void* ptr, size_t size, size_t count, FILE* file);
 
-bool LoadDynamicStringInt(const char* sourceFile, const int sourceLine, char*& buffer, FILE* file);
+// TODO: make consistent
+bool LoadDynamicStringInt(const char* sourceFile, int sourceLine, char*& buffer, FILE* file);
+void SaveDynamicString(const char* buffer, int maxSize, FILE* file);
 
-static bool DoesFileExist(const char* name)
+static void SaveDynamicString(const char* buffer, FILE* file)
 {
-	return access(name, 0) == 0;
+	SaveDynamicString(buffer, -1, file);
+}
+
+static bool DoesFileExist(const char* path)
+{
+	return access(path, 0) == 0;
+}
+
+static bool MakeDirectory(const char* path)
+{
+	return mkdir(path, 0700);
 }
 
 class UplinkObject;
@@ -124,6 +134,13 @@ bool LoadBTree(BTree<UplinkObject*>* tree, FILE* file);
 template<std::derived_from<UplinkObject> T> bool LoadBTree(BTree<T*>* tree, FILE* file)
 {
 	return LoadBTree(reinterpret_cast<BTree<UplinkObject*>*>(tree), file);
+}
+
+void SaveBTree(BTree<UplinkObject*>* tree, FILE* file);
+
+template<std::derived_from<UplinkObject> T> void SaveBTree(BTree<T*>* tree, FILE* file)
+{
+	SaveBTree(reinterpret_cast<BTree<UplinkObject*>*>(tree), file);
 }
 
 void DeleteBTreeData(BTree<UplinkObject*>* tree);

@@ -59,8 +59,18 @@ class UplinkObject
 {
 public:
 	virtual ~UplinkObject() = default;
-	virtual bool Load(FILE* file) { return true; }
-	virtual void Save(FILE* file) {}
+
+	virtual bool Load(FILE* file)
+	{
+		(void)file;
+		return true;
+	}
+
+	virtual void Save(FILE* file)
+	{
+		(void)file;
+	}
+
 	virtual void Print() {}
 	virtual void Update() {}
 	virtual const char* GetID() { return "UOBJ"; }
@@ -69,9 +79,9 @@ public:
 #pragma region NOTE: Can probably be removed because useless?
 	char* GetID_END()
 	{
-		const auto str = new char[13];
-		UplinkSnprintf(str, 0xDu, "%s_END", GetID());
-		snprintf(str, 0xDu, "%s_END", GetID());
+		static constexpr size_t MAX = 13;
+		const auto str = new char[MAX];
+		UplinkSnprintf(str, MAX, "%s_END", GetID());
 		return str;
 	}
 

@@ -6,7 +6,7 @@
 
 struct OptionChange
 {
-	char Name[64];
+	char Name[0x40];
 	int Value;
 };
 
@@ -19,8 +19,11 @@ struct ColourOption
 
 class Option : public UplinkObject
 {
-	char _name[64] { };
-	char _tooltip[128] = "";
+	static constexpr size_t NAME_BUFFER_MAX = 64;
+	static constexpr size_t TOOLTIP_BUFFER_MAX = 128;
+
+	char _name[NAME_BUFFER_MAX] { };
+	char _tooltip[TOOLTIP_BUFFER_MAX] = "";
 	bool _yesOrNo = false;
 	bool _visible = true;
 	int _value = 0;
@@ -40,12 +43,17 @@ class Option : public UplinkObject
 
 class Options : public UplinkObject
 {
+	static constexpr size_t THEME_NAME_BUFFER_MAX = 128;
+	static constexpr size_t THEME_AUTHOR_BUFFER_MAX = 128;
+	static constexpr size_t THEME_TITLE_BUFFER_MAX = 128;
+	static constexpr size_t THEME_DESCRIPTION_BUFFER_MAX = 1024;
+
 	BTree<Option*> _options;
 	LList<OptionChange*> _changes;
-	char _themeName[128] = "graphics";
-	char _themeAuthor[128] { };
-	char _themeTitle[128] { };
-	char _themeDescription[1024] { };
+	char _themeName[THEME_NAME_BUFFER_MAX] = "graphics";
+	char _themeAuthor[THEME_AUTHOR_BUFFER_MAX] { };
+	char _themeTitle[THEME_TITLE_BUFFER_MAX] { };
+	char _themeDescription[THEME_DESCRIPTION_BUFFER_MAX] { };
 	BTree<ColourOption*> _colours;
 
 	~Options() override;

@@ -2,7 +2,7 @@
 
 #include "NOTIMPL.hpp"
 
-UplinkObject* CreateUplinkObject(UplinkObjectID id)
+UplinkObject* CreateUplinkObject(const UplinkObjectID id)
 {
 	(void)id;
 	NOTIMPL_ABORT;

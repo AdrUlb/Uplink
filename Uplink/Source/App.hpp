@@ -10,15 +10,15 @@
 
 class App : public UplinkObject
 {
-	char _path[256];
-	char _usersPath[256];
-	char _usersTempPath[256];
-	char _usersOldPath[256];
-	char _version[32];
-	char _type[32];
-	char _date[32];
-	char _title[64];
-	char _build[256];
+	char _path[0x100];
+	char _usersPath[0x100];
+	char _usersTempPath[0x100];
+	char _usersOldPath[0x100];
+	char _version[0x20];
+	char _type[0x20];
+	char _date[0x20];
+	char _title[0x40];
+	char _build[0x100];
 	int _startTime;
 	bool _closed;
 	Options* _options;
