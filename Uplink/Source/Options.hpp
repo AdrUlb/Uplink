@@ -6,7 +6,9 @@
 
 struct OptionChange
 {
-	char Name[0x40];
+	static constexpr size_t NAME_BUFFER_MAX = 0x40;
+
+	char Name[NAME_BUFFER_MAX];
 	int Value;
 };
 
@@ -19,8 +21,8 @@ struct ColourOption
 
 class Option : public UplinkObject
 {
-	static constexpr size_t NAME_BUFFER_MAX = 64;
-	static constexpr size_t TOOLTIP_BUFFER_MAX = 128;
+	static constexpr size_t NAME_BUFFER_MAX = 0x40;
+	static constexpr size_t TOOLTIP_BUFFER_MAX = 0x20;
 
 	char _name[NAME_BUFFER_MAX] { };
 	char _tooltip[TOOLTIP_BUFFER_MAX] = "";
@@ -29,6 +31,12 @@ class Option : public UplinkObject
 	int _value = 0;
 
 public:
+	[[nodiscard]] const char* Name() const { return _name; }
+	[[nodiscard]] const char* Tooltip() const { return _tooltip; }
+	[[nodiscard]] bool YesOrNo() const { return _yesOrNo; }
+	[[nodiscard]] bool Visible() const { return _visible; }
+	[[nodiscard]] int Value() const { return _value; }
+
 	bool Load(FILE* file) override;
 	void Save(FILE* file) override;
 	void Print() override;
@@ -36,7 +44,7 @@ public:
 	UplinkObjectID GetOBJECTID() override { return UplinkObjectID::Option; }
 
 	void SetName(const char* name);
-	void SetTooltip(char* tooltip);
+	void SetTooltip(const char* tooltip);
 	void SetValue(const int value) { _value = value; }
 	void SetVisible(const bool visible) { _visible = visible; }
 	void SetYesOrNo(const bool yesOrNo) { _yesOrNo = yesOrNo; }
@@ -70,9 +78,9 @@ public:
 
 	Option* GetOption(const char* name);
 	int GetOptionValue(const char* name);
-	const char* GetThemeDescription();
-	const char* GetThemeName();
-	const char* GetThemeTitle();
+	[[nodiscard]] const char* GetThemeName() const { return _themeName; }
+	[[nodiscard]] const char* GetThemeTitle() const { return _themeTitle; }
+	[[nodiscard]] const char* GetThemeDescription() const { return _themeDescription; }
 	bool IsOptionEqualTo(const char* name, int value);
 	void SetOptionValue(const char* name, int value);
 	void SetOptionValue(const char* name, int value, const char* tooltip, bool yesOrNo, bool visible);

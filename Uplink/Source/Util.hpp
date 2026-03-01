@@ -84,6 +84,21 @@
 	} \
 	while (0)
 
+#define UplinkAbort(message) \
+	do \
+	{ \
+		printf( \
+			"\n" \
+			"Uplink has been forced to Abort\n" \
+			"===============================\n" \
+			" Message   : %s\n" \
+			" Location  : %s, line %d\n", \
+			message, __FILE__, __LINE__ \
+		); \
+		abort(); \
+	} \
+	while (0)
+
 #define LoadData(ptr, size, file) \
 	({ \
 		const auto success = FileReadDataInt(__FILE__, __LINE__, ptr, size, 1, file); \

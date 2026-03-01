@@ -52,7 +52,7 @@ void Option::SetName(const char* name)
 	UplinkStrncpy(_name, name, NAME_BUFFER_MAX);
 }
 
-void Option::SetTooltip(char* tooltip)
+void Option::SetTooltip(const char* tooltip)
 {
 	UplinkAssert(strlen(tooltip) < TOOLTIP_BUFFER_MAX);
 	UplinkStrncpy(_tooltip, tooltip, TOOLTIP_BUFFER_MAX);
@@ -270,17 +270,90 @@ void Options::CreateDefaultOptions()
 	GetOption("graphics_screenrefresh")->SetVisible(false);
 }
 
-void Options::RequestShutdownChange(const char* name, int value) { NOTIMPL_ABORT; }
-void Options::ApplyShutdownChanges() { NOTIMPL_ABORT; }
+void Options::RequestShutdownChange(const char* name, const int value)
+{
+	const auto change = new OptionChange();
 
-Option* Options::GetOption(const char* name) { NOTIMPL_ABORT; }
-int Options::GetOptionValue(const char* name) { NOTIMPL_ABORT; }
-const char* Options::GetThemeDescription() { NOTIMPL_ABORT; }
-const char* Options::GetThemeName() { NOTIMPL_ABORT; }
-const char* Options::GetThemeTitle() { NOTIMPL_ABORT; }
-bool Options::IsOptionEqualTo(const char* name, int value) { NOTIMPL_ABORT; }
-void Options::SetOptionValue(const char* name, int value) { NOTIMPL_ABORT; }
-void Options::SetOptionValue(const char* name, int value, const char* tooltip, bool yesOrNo, bool visible) { NOTIMPL_ABORT; }
+	UplinkStrncpy(change->Name, name, OptionChange::NAME_BUFFER_MAX);
+	change->Value = value;
+
+	_changes.PutData(change);
+}
+
+void Options::ApplyShutdownChanges()
+{
+	while (_changes.GetData(0))
+	{
+		const auto change = _changes.GetData(0);
+		_changes.RemoveData(0);
+		SetOptionValue(change->Name, change->Value);
+		delete change;
+	}
+}
+
+Option* Options::GetOption(const char* name)
+{
+	return _options.GetData(name);
+}
+
+int Options::GetOptionValue(const char* name)
+{
+	const auto option = GetOption(name);
+	if (!option)
+	{
+		char buffer[256]; // [esp+20h] [ebp-108h] BYREF
+		UplinkSnprintf(buffer, 0x100u, "Option %s not found", name);
+		UplinkAbort(buffer);
+	}
+
+	return option->Value();
+}
+
+bool Options::IsOptionEqualTo(const char* name, const int value)
+{
+	const auto option = GetOption(name);
+	return option && option->Value() == value;
+}
+
+void Options::SetOptionValue(const char* name, int value)
+{
+	const auto tree = _options.LookupTree(name);
+
+	if (!tree)
+	{
+		std::println("Tried to set unrecognised option: {}", name);
+		return;
+	}
+
+	const auto option = tree->NodeData();
+	UplinkAssert(option);
+	option->SetValue(value);
+}
+
+void Options::SetOptionValue(const char* name, int value, const char* tooltip, bool yesOrNo, bool visible)
+{
+	const auto tree = _options.LookupTree(name);
+
+	if (tree)
+	{
+		const auto option = tree->NodeData();
+		UplinkAssert(option);
+		option->SetValue(value);
+		option->SetTooltip(tooltip);
+		option->SetYesOrNo(yesOrNo);
+		option->SetVisible(visible);
+		return;
+	}
+
+	const auto option = new Option();
+	option->SetName(name);
+	option->SetValue(value);
+	option->SetTooltip(tooltip);
+	option->SetYesOrNo(yesOrNo);
+	option->SetVisible(visible);
+	_options.PutData(name, option);
+}
+
 void Options::SetThemeName(const char* name) { NOTIMPL_ABORT; }
 char* Options::ThemeFilename(const char* name) { NOTIMPL_ABORT; }
 
