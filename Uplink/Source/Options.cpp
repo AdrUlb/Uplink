@@ -128,7 +128,8 @@ bool Options::Load(FILE* file)
 	uint32_t themeNameLength;
 	char themeName[THEME_NAME_BUFFER_MAX];
 
-	if (fgetc(file) == 't' && LoadData(&themeNameLength, 4, file) && themeNameLength + 1 < THEME_NAME_BUFFER_MAX && fread(themeName, themeNameLength, 1, file) == 1)
+	if (fgetc(file) == 't' && LoadData(&themeNameLength, 4, file) && themeNameLength + 1 < THEME_NAME_BUFFER_MAX && fread(themeName, themeNameLength, 1, file)
+	    == 1)
 	{
 		UplinkStrncpy(_themeName, themeName, THEME_NAME_BUFFER_MAX);
 		themeName[themeNameLength] = 0;
@@ -179,15 +180,96 @@ void Options::Save(FILE* file)
 	const uint32_t themeNameSize = strlen(this->_themeName);
 	SaveData(&themeNameSize, 4, file);
 	SaveFixedString(_themeName, themeNameSize, file);
-	
+
 	fwrite(_themeName, themeNameSize, 1, file);
 	fclose(file);
 	RsEncryptFile(path);
 }
 
-void Options::Print() { NOTIMPL_ABORT; }
+void Options::Print()
+{
+	std::println("============== O P T I O N S ===============================");
+	PrintBTree(&_options);
+	std::println("============================================================");
+}
 
-void Options::CreateDefaultOptions() { NOTIMPL_ABORT; }
+void Options::CreateDefaultOptions()
+{
+	if (!GetOption("game_debugstart"))
+		SetOptionValue("game_debugstart", 1, "z", true, false);
+
+	if (!GetOption("game_firsttime"))
+	{
+		const auto existingGames = App::ListExistingGames();
+		const int existingGameCount = existingGames->Size();
+		if (existingGameCount <= 0)
+		{
+			SetOptionValue("game_firsttime", 1, "z", true, false);
+		}
+		else
+		{
+			SetOptionValue("game_firsttime", 0, "z", true, false);
+			for (int i = 0; i < existingGameCount; i++)
+			{
+				if (!existingGames->ValidIndex(i))
+					continue;
+
+				delete[] existingGames->GetData(i);
+			}
+		}
+
+		delete existingGames;
+	}
+
+	const auto gameVersion = static_cast<int>(strtof(UPLINK_VERSION, nullptr) * 100.0f);
+
+	if (!GetOption("game_version"))
+		SetOptionValue("game_version", gameVersion, "z", false, false);
+
+	if (!GetOption("graphics_screenwidth"))
+		SetOptionValue("graphics_screenwidth", 1024, "Sets the width of the screen", false, false);
+
+	if (!GetOption("graphics_screenheight"))
+		SetOptionValue("graphics_screenheight", 768, "Sets the height of the screen", false, false);
+
+	if (!GetOption("graphics_screendepth"))
+		SetOptionValue("graphics_screendepth", -1, "Sets the colour depth. -1 Means use desktop colour depth.", false, false);
+
+	if (!GetOption("graphics_screenrefresh"))
+		SetOptionValue("graphics_screenrefresh", -1, "Sets the refresh rate. -1 Means use desktop refresh.", false, false);
+
+	if (!GetOption("graphics_fullscreen"))
+		SetOptionValue("graphics_fullscreen", 1, "Sets the game to run fullscreen or in a window", true, true);
+
+	if (!GetOption("graphics_buttonanimations"))
+		SetOptionValue("graphics_buttonanimations", 1, "Enables or disables button animations", true, true);
+
+	if (!GetOption("graphics_safemode"))
+		SetOptionValue("graphics_safemode", 0, "Enables graphical safemode for troubleshooting", true, true);
+
+	if (!GetOption("graphics_softwaremouse"))
+		SetOptionValue("graphics_softwaremouse", 0, "Render a software mouse.  Use to correct mouse problems.", true, true);
+
+	if (!GetOption("graphics_fasterbuttonanimations"))
+		SetOptionValue("graphics_fasterbuttonanimations", 0, "Increase the speed of button animations.", true, true);
+
+	if (!GetOption("graphics_defaultworldmap"))
+		SetOptionValue("graphics_defaultworldmap", 0, "Create agents with the default world map.", true, true);
+
+	if (const auto o = GetOption("graphics_softwarerendering"); !o)
+		SetOptionValue("graphics_softwarerendering", 0, "Enable software rendering.", true, false);
+	else
+		o->SetVisible(false);
+
+	if (!GetOption("sound_musicenabled"))
+		SetOptionValue("sound_musicenabled", 1, "Enables or disables music", true, true);
+
+	GetOption("graphics_screenwidth")->SetVisible(false);
+	GetOption("graphics_screenheight")->SetVisible(false);
+	GetOption("graphics_screendepth")->SetVisible(false);
+	GetOption("graphics_screenrefresh")->SetVisible(false);
+}
+
 void Options::RequestShutdownChange(const char* name, int value) { NOTIMPL_ABORT; }
 void Options::ApplyShutdownChanges() { NOTIMPL_ABORT; }
 

@@ -148,6 +148,36 @@ void SaveBTree(BTree<UplinkObject*>* tree, FILE* file)
 	delete ids;
 }
 
+void PrintBTree(BTree<UplinkObject*>* tree)
+{
+	UplinkAssert(tree);
+
+	const auto v2 = tree->ConvertToDArray();
+	const auto v3 = tree->ConvertIndexToDArray();
+
+	for (int v1 = 0; v1 < v2->Size(); v1++)
+	{
+		if (!v2->ValidIndex(v1))
+			continue;
+
+		UplinkAssert(!v3->ValidIndex( v1));
+		std::println("Index = {}", v3->GetData(v1));
+
+		const auto obj = v2->GetData(v1);
+
+		if (!obj)
+		{
+			std::println("NULL");
+			continue;
+		}
+
+		obj->Print();
+	}
+
+	delete v2;
+	delete v3;
+}
+
 void DeleteBTreeData(BTree<UplinkObject*>* tree)
 {
 	UplinkAssert(tree);

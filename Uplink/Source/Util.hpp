@@ -149,3 +149,10 @@ template<std::derived_from<UplinkObject> T> void DeleteBTreeData(BTree<T*>* tree
 {
 	DeleteBTreeData(reinterpret_cast<BTree<UplinkObject*>*>(tree));
 }
+
+void PrintBTree(BTree<UplinkObject*>* tree);
+
+template<std::derived_from<UplinkObject> T> void PrintBTree(BTree<T*>* tree)
+{
+	PrintBTree(reinterpret_cast<BTree<UplinkObject*>*>(tree));
+}

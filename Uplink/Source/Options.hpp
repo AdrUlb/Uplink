@@ -28,6 +28,7 @@ class Option : public UplinkObject
 	bool _visible = true;
 	int _value = 0;
 
+public:
 	bool Load(FILE* file) override;
 	void Save(FILE* file) override;
 	void Print() override;
@@ -56,6 +57,7 @@ class Options : public UplinkObject
 	char _themeDescription[THEME_DESCRIPTION_BUFFER_MAX] { };
 	BTree<ColourOption*> _colours;
 
+public:
 	~Options() override;
 	bool Load(FILE* file) override;
 	void Save(FILE* file) override;

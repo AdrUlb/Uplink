@@ -55,7 +55,6 @@ public:
 	void Close();
 	void CloseGame();
 
-	DArray<char*>* ListExistingGames();
 	void SetNextLoadGame(const char* name);
 	void LoadGame(const char* name);
 	void SaveGame(const char* name);
@@ -66,4 +65,5 @@ public:
 	void UnRegisterPhoneDialler(PhoneDialler* dialler);
 
 	static void CoreDump();
+	static DArray<char*>* ListExistingGames();
 };
